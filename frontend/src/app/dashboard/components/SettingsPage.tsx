@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+
 import {
   ArrowLeft,
   Settings,
@@ -18,6 +19,7 @@ import {
 
 interface SettingsPageProps {
   onBack: () => void;
+  onViewChange: (view: string) => void;
 }
 
 /** Strict setting types so TS can narrow by `type` */
@@ -41,7 +43,10 @@ const iconMap: Record<SettingsCategory["icon"], React.ElementType> = {
   CreditCard,
 };
 
-export default function SettingsPage({ onBack }: SettingsPageProps) {
+export default function SettingsPage({
+  onBack,
+  onViewChange,
+}: SettingsPageProps) {
   const [settingsCategories, setSettingsCategories] = useState<
     SettingsCategory[] | null
   >(null);
@@ -278,11 +283,12 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
 
                 {category.title === "Billing" && (
                   <div className="space-y-2 mt-4">
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => onViewChange("pricing")}
+                    >
                       Upgrade Plan
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      Update Payment Method
                     </Button>
                   </div>
                 )}
