@@ -2,28 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { saveUser } from "@/lib/mockUser";
-import type { Plan } from "@/lib/plan"; // if stored separately
+import { plans, type Plan } from "@/lib/plan";
 
 interface PricingPageProps {
   onBack: () => void;
 }
-export interface Plan {
-  id: "starter" | "pro" | "agency";
-  name: string;
-  price: number;
-  credits: number;
-}
-
 
 export default function PricingPage({ onBack }: PricingPageProps) {
-  const plans: Plan[] = [
-    { id: "starter", name: "Starter", price: 5, credits: 800 },
-    { id: "pro", name: "Pro", price: 22, credits: 5500 },
-    { id: "agency", name: "Agency", price: 49, credits: 14000 },
-  ];
 
   const handleSubscribe = async (plan: Plan): Promise<void> => {
-    // Save selected plan temporarily
     saveUser({
       planId: plan.id,
       credits: plan.credits,
@@ -56,10 +43,8 @@ export default function PricingPage({ onBack }: PricingPageProps) {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <Button variant="outline" onClick={onBack}>
-        Back
-      </Button>
+    <div className="space-y-6">
+      <Button variant="outline" onClick={onBack}>Back</Button>
 
       <h1 className="text-3xl font-bold text-center">Choose Your Plan</h1>
 
@@ -69,6 +54,21 @@ export default function PricingPage({ onBack }: PricingPageProps) {
             <h2 className="text-xl font-semibold">{plan.name}</h2>
             <p className="text-3xl font-bold">${plan.price}</p>
             <p className="text-gray-600">{plan.credits} AI Credits</p>
+
+            <ul className="text-sm text-gray-700 space-y-1">
+              {plan.features.map((f) => (
+                <li key={f.label}>
+                  ✔ {f.label}:{" "}
+                  <span className="font-medium">
+                    {f.available === true
+                      ? "Included"
+                      : f.available === false
+                      ? "Not available"
+                      : f.available}
+                  </span>
+                </li>
+              ))}
+            </ul>
 
             <Button
               className="w-full bg-blue-600 text-white"
