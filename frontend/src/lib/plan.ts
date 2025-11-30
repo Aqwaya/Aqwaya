@@ -4,7 +4,7 @@ export interface PlanFeature {
 }
 
 export interface Plan {
-  id: "free" | "starter" | "pro" | "agency";
+  id: "starter" | "pro" | "agency";
   name: string;
   price: number;
   credits: number;
@@ -14,24 +14,6 @@ export interface Plan {
 
 // Plans data mock (Frontend API Mock)
 export const plans: Plan[] = [
-  {
-    id: "free",
-    name: "Free Trial",
-    price: 0,
-    credits: 200,
-    validDays: 30,
-    features: [
-      { label: "Email Campaigns (AI)", available: "Up to 3 emails" },
-      { label: "WhatsApp Text Generation", available: "Limited" },
-      { label: "AI Landing Page Builder", available: false },
-      { label: "Auto Reply / Sequence", available: false },
-      { label: "Team Members", available: "1" },
-      { label: "Custom Domain", available: false },
-      { label: "Credit Rollover", available: false },
-      { label: "A/B Copy Testing Suggestions", available: false },
-      { label: "Priority Support", available: false },
-    ],
-  },
   {
     id: "starter",
     name: "Starter",
@@ -44,7 +26,7 @@ export const plans: Plan[] = [
       { label: "AI Landing Page Builder", available: true },
       { label: "Auto Reply / Sequence", available: "Basic" },
       { label: "Team Members", available: "1" },
-      { label: "Custom Domain", available: "Add-on" },
+      { label: "Custom Domain", available: false },
       { label: "Credit Rollover", available: "30 days" },
       { label: "A/B Copy Testing Suggestions", available: true },
       { label: "Priority Support", available: false },
@@ -62,7 +44,7 @@ export const plans: Plan[] = [
       { label: "AI Landing Page Builder", available: true },
       { label: "Auto Reply / Sequence", available: "Advanced" },
       { label: "Team Members", available: "Up to 3" },
-      { label: "Custom Domain", available: "Add-on" },
+      { label: "Custom Domain", available: true },
       { label: "Credit Rollover", available: "30 days" },
       { label: "A/B Copy Testing Suggestions", available: true },
       { label: "Priority Support", available: true },
