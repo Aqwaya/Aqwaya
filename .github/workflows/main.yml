@@ -1,4 +1,4 @@
-name: Deploy Stokive-FE-Staging on the Server
+name: Deploy Aqwaya-FE-Staging on the Server
 
 on:
   push:
@@ -10,23 +10,26 @@ jobs:
     name: Deploy to Server
     runs-on: ubuntu-latest
     steps:
-      - name: Update and Deploy
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
-          host: 34.204.98.194
-          username: ubuntu
-          key: 
-          script: | 
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
             cd /var/www/aqwayai/frontend/dev.aqwaya.com
+
+            git fetch origin
             git checkout main
             git pull origin main
-            npm install
+
+            npm install --legacy-peer-deps
             npm run build
+
             pm2 restart dev.aqwaya.com
             sudo systemctl reload nginx
-
-
-  
