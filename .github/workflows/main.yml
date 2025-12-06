@@ -1,4 +1,4 @@
-name: Deploy Aqwaya-FE-Staging on the Server
+name: Deploy Aqwayai-FE-Staging on the Server
 
 on:
   push:
@@ -7,37 +7,26 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to Server
     runs-on: ubuntu-latest
-
     steps:
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.1.0
+      - name: Update and Deploy
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP }}          # Example: 34.204.98.194
-          username: ${{ secrets.SERVER_USERNAME }} # Example: ubuntu
-          port: 22
-          key: ${{ secrets.SERVER_SSH_KEY }}       # Your private key
-          script: |
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: | 
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-            echo "🚀 Connected to server"
-
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             cd /var/www/aqwayai/frontend
-
-            echo "📥 Pulling latest changes"
+            git checkout main
             git pull origin main
-
-            echo "📦 Installing dependencies"
-            npm install --legacy-peer-deps
-
-            echo "🏗 Building app"
+            npm install
             npm run build
-
-            echo "🔄 Restarting PM2 process"
             pm2 restart 0
-
-            echo "🌐 Reloading Nginx"
             sudo systemctl reload nginx
 
-            echo "✅ Deployment complete!"
+
+  
