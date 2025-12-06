@@ -13,7 +13,7 @@ jobs:
       - name: Update and Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP }}
+          host: 34.204.98.194
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: | 
