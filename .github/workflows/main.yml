@@ -7,29 +7,22 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Server
     runs-on: ubuntu-latest
+
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+      - name: Run SSH Commands
+        uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: 34.204.98.194
+          username: ubuntu
           port: 22
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             cd /var/www/aqwayai/frontend/dev.aqwaya.com
-
-            git fetch origin
-            git checkout main
             git pull origin main
-
-            npm install --legacy-peer-deps
+            npm install
             npm run build
-
             pm2 restart dev.aqwaya.com
             sudo systemctl reload nginx
