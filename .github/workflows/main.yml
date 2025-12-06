@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Run SSH Commands
-        uses: appleboy/ssh-action@v1.1.0
+        uses: appleboy/ssh-action@master
         with:
-          host: 34.204.98.194
-          username: ubuntu
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
           port: 22
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
