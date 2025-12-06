@@ -10,19 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run SSH Commands
-        uses: appleboy/ssh-action@master
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
+          host: ${{ secrets.SERVER_IP }}          # Example: 34.204.98.194
+          username: ${{ secrets.SERVER_USERNAME }} # Example: ubuntu
           port: 22
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SERVER_SSH_KEY }}       # Your private key
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            cd /var/www/aqwayai/frontend/dev.aqwaya.com
+
+            echo "🚀 Connected to server"
+
+            cd /var/www/aqwayai/frontend
+
+            echo "📥 Pulling latest changes"
             git pull origin main
-            npm install
+
+            echo "📦 Installing dependencies"
+            npm install --legacy-peer-deps
+
+            echo "🏗 Building app"
             npm run build
-            pm2 restart dev.aqwaya.com
+
+            echo "🔄 Restarting PM2 process"
+            pm2 restart 0
+
+            echo "🌐 Reloading Nginx"
             sudo systemctl reload nginx
+
+            echo "✅ Deployment complete!"
