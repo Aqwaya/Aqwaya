@@ -1,4 +1,4 @@
-name: Deploy Aqwayai-FE-Staging on the Server.
+name: Deploy Aqwayai-FE-Staging on the Server
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Server
     runs-on: ubuntu-latest
     steps:
       - name: Update and Deploy
@@ -16,17 +15,15 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          script: | 
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          port: 22
+          script: |
+            export NVM_DIR="/home/${USER}/.nvm"
+            source $NVM_DIR/nvm.sh
+
             cd /var/www/aqwayai/frontend
-            git checkout main
             git pull origin main
-            npm install
+            npm ci
             npm run build
-            pm2 restart dev.aqwaya.com
+
+            pm2 restart aqwayai-fe-staging
             sudo systemctl reload nginx
-
-
-  
