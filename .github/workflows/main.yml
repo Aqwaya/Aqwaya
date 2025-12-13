@@ -1,4 +1,4 @@
-name: Deploy Aqwayai-FE-Staging on the Server
+name: Deploy Aqwayai-FE-Staging on the Server.
 
 on:
   push:
