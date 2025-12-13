@@ -16,7 +16,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          script: |
+          script: echo "SSH connected"
             export NVM_DIR="/home/${USER}/.nvm"
             source $NVM_DIR/nvm.sh
 
