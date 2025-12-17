@@ -21,9 +21,11 @@ jobs:
             source $NVM_DIR/nvm.sh
 
             cd /var/www/aqwayai/frontend
+            git checkout origin main
             git pull origin main
-            npm ci
+            npm i
             npm run build
 
-            pm2 restart aqwayai-fe-staging
+            pm2 restart dev.aqwaya.com 
+            pm2 save
             sudo systemctl reload nginx
