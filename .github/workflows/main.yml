@@ -17,8 +17,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: echo "SSH connected"
-            export NVM_DIR="/home/${USER}/.nvm"
-            source $NVM_DIR/nvm.sh
+           export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
             cd /var/www/aqwayai/frontend
             git checkout origin main
