@@ -24,6 +24,7 @@ import SMSWhatsAppMarketing from "./components/SMSWhatsappMarketing";
 import AnalyticsOverview from "./components/AnalyticsOverview";
 import SettingsPage from "./components/SettingsPage";
 import LandingPageBuilder from "./components/LandingPageBuilder";
+import PricingPage from "./components/PricingPage";
 
 interface Stat {
   title: string;
@@ -40,6 +41,13 @@ interface Campaign {
   status: string;
   leads: number;
   conversion: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  credits: number;
+  plan: "starter" | "pro" | "agency";
 }
 
 const iconMap: Record<Stat["icon"], React.ReactElement> = {
@@ -154,7 +162,14 @@ const Dashboard = () => {
       case "analytics":
         return <AnalyticsOverview onBack={() => setCurrentView("dashboard")} />;
       case "settings":
-        return <SettingsPage onBack={() => setCurrentView("dashboard")} />;
+        return (
+          <SettingsPage
+            onBack={() => setCurrentView("dashboard")}
+            onViewChange={setCurrentView}
+          />
+        );
+      case "pricing":
+        return <PricingPage onBack={() => setCurrentView("settings")} />;
       default:
         return (
           <div className="space-y-6">

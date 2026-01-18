@@ -42,7 +42,7 @@ export const GET = async () => {
         {
           label: "Current Plan",
           type: "display",
-          value: "Pro Plan - ₦000 / month",
+          value: "Free Trial - $000 / month",
         },
         {
           label: "Next Billing Date",
@@ -52,11 +52,6 @@ export const GET = async () => {
             month: "long",
             day: "numeric",
           }),
-        },
-        {
-          label: "Payment Method",
-          type: "display",
-          value: "**** **** **** 1234",
         },
       ],
     },
