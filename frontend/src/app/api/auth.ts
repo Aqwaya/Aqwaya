@@ -1,4 +1,4 @@
-// src/api/auth.ts
+// src/auth.ts
 import axios from "axios";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -11,7 +11,7 @@ export const isLoggedIn = () => {
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const res = await axios.post(`${API_BASE}/api/users/login`, { email, password });
+    const res = await axios.post(`${API_BASE}/users/login`, { email, password });
     return res.data; // { user, token } with firstLogin included
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
@@ -23,7 +23,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const registerUser = async (username: string, email: string, password: string) => {
   try {
-    const res = await axios.post(`${API_BASE}/api/users/register`, { username, email, password });
+    const res = await axios.post(`${API_BASE}/users/register`, { username, email, password });
     return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
