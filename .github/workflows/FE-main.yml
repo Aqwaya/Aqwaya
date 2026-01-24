@@ -27,7 +27,7 @@ jobs:
             git pull origin main
             npm i
             npm run build
-            pm2 restart dev.aqwaya.com 
+            pm2 restart dev.aqwaya.com-FE 
             pm2 save
 
             sudo systemctl reload nginx
