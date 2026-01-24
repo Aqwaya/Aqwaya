@@ -21,9 +21,32 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export type View =
+  | "dashboard"
+  | "ai-builder"
+  | "email"
+  | "email-strategy-builder"
+  | "email-goal-selector"
+  | "campaigns"
+  | "landing-pages"
+  | "landing-page-builder"
+  | "leads"
+  | "whatsapp-goal-selector"
+  | "whatsapp-strategy-builder"
+  | "sms-whatsapp"
+  | "analytics"
+  | "settings"
+  | "pricing"
+  | "ai-strategy"
+  | "strategy-results"
+  | "create"
+  | "view"
+  | "edit";
+
+
 interface SidebarProps {
-  currentView: string;
-  onViewChange: (view: string) => void;
+  currentView: View;
+  onViewChange: (view: View) => void;
 }
 const capitalizeFullName = (name: string): string => {
   if (!name) return "Sarah Johnson";
@@ -55,20 +78,29 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
     router.push("/auth/login");
   };
 
-  const menuItems = [
+  const menuItems: {
+    id: View;
+    label: string;
+    icon: React.ElementType;
+    isAI?: boolean;
+  }[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "AIPromptBuilder", label: "AI Prompt Builder", icon: Zap },
+    { id: "ai-builder", label: "AI Prompt Builder", icon: Zap },
     { id: "campaigns", label: "Campaigns", icon: Target },
     { id: "landingPages", label: "Landing Pages", icon: Globe },
     { id: "leads", label: "Leads", icon: Users },
     {
-      id: "emailMarketing",
+      id: "email-goal-selector",
       label: "AI Email Marketing",
       icon: Bot,
       isAI: true,
       description: "Powered by AI",
     },
-    { id: "sms", label: "SMS & WhatsApp", icon: MessageSquare },
+    {
+      id: "whatsapp-goal-selector",
+      label: "SMS & WhatsApp",
+      icon: MessageSquare,
+    },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "settings", label: "Settings", icon: Settings },
   ];

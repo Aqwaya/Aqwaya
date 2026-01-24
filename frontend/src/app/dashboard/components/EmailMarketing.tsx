@@ -23,6 +23,7 @@ import CampaignCreator from "./email-marketing/CampaignCreator";
 import SegmentManager from "./email-marketing/SegmentManager";
 import AIStrategyBuilder from "./email-marketing/AIStrategyBuilder";
 import StrategyResults from "./email-marketing/StrategyResults";
+<<<<<<< HEAD
 
 type EmailCampaign = {
   id: string;
@@ -53,11 +54,19 @@ type EmailStrategy = {
   generated_strategy: any;
   target_audience_profile?: { description?: string };
 };
+=======
+import { EmailStrategy } from "@/types/emailStrategy";
+import { EmailCampaign } from "@/types/emailCampaign";
+import { View } from "../components/Sidebar";
+import EmailGoalSelector from "../components/email-marketing/EmailGoalSelector";
+>>>>>>> 31ab30e (update)
 
 interface EmailMarketingProps {
   onBack: () => void;
+  onCreateNew?: () => void;
 }
 
+<<<<<<< HEAD
 type View =
   | "dashboard"
   | "ai-strategy"
@@ -73,6 +82,32 @@ const mockUser = {
 };
 
 const EmailMarketing = ({ onBack }: EmailMarketingProps) => {
+=======
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+/* ===== Mock user ===== */
+
+const mockUser: User = {
+  id: "1",
+  name: "John Doe",
+  email: "john@example.com",
+};
+
+/* ===== API response shape for fetch ===== */
+
+interface ApiResponse {
+  campaigns?: EmailCampaign[];
+  strategies?: EmailStrategy[];
+}
+
+/* ===== Component ===== */
+
+const EmailMarketing = ({ onBack, onCreateNew }: EmailMarketingProps) => {
+>>>>>>> 31ab30e (update)
   const { toast } = useToast();
   const [currentView, setCurrentView] = useState<View>("dashboard"); // Start with dashboard, not AI strategy
   const [selectedCampaign, setSelectedCampaign] =
@@ -252,6 +287,10 @@ const EmailMarketing = ({ onBack }: EmailMarketingProps) => {
     setSelectedStrategy(null);
   };
 
+  const handleEmailGoalSelector = () => {
+    setCurrentView("email-goal-selector");
+  };
+
   const handleCampaignCreated = (campaign: EmailCampaign) => {
     setCampaigns((prev) => [campaign, ...prev]);
     setCurrentView("dashboard");
@@ -321,8 +360,13 @@ const EmailMarketing = ({ onBack }: EmailMarketingProps) => {
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
+<<<<<<< HEAD
             onClick={handleOpenAIStrategy}
             className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700"
+=======
+            onClick={handleEmailGoalSelector}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700 w-full sm:w-auto"
+>>>>>>> 31ab30e (update)
           >
             <Wand2 className="w-4 h-4 mr-2" />
             AI Strategy Builder

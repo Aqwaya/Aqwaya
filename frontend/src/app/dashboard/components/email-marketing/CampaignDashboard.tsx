@@ -362,3 +362,359 @@ const CampaignDashboard = ({
 };
 
 export default CampaignDashboard;
+
+// "use client";
+
+// import { useState } from "react";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Button } from "@/components/ui/button";
+// import { Badge } from "@/components/ui/badge";
+// import { Input } from "@/components/ui/input";
+// import { MockUser } from "@/lib/mockUser";
+// import {
+//   Mail,
+//   Search,
+//   MoreVertical,
+//   Play,
+//   Pause,
+//   Edit,
+//   Trash2,
+//   TrendingUp,
+//   Users,
+//   MousePointer,
+//   Eye,
+// } from "lucide-react";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+
+// /* =====================
+//    Types (Frontend only)
+// ===================== */
+
+// type CampaignStatus = "active" | "paused" | "completed" | "draft";
+// type CampaignType = "sequence" | "automation" | "one-time";
+
+// interface CampaignStats {
+//   sent: number;
+//   delivered: number;
+//   opened: number;
+//   clicked: number;
+//   unsubscribed: number;
+//   bounced: number;
+// }
+
+// export interface EmailCampaign {
+//   id: string;
+//   name: string;
+//   subject_line: string;
+//   campaign_type: CampaignType;
+//   status: CampaignStatus;
+//   created_at: string;
+//   stats: CampaignStats;
+// }
+
+// interface CampaignDashboardProps {
+//   user: MockUser;
+//   onCreateCampaign: () => void;
+//   onViewCampaign: (campaign: EmailCampaign) => void;
+//   onEditCampaign: (campaign: EmailCampaign) => void;
+// }
+
+// /* =====================
+//    Mock Data
+// ===================== */
+
+// const MOCK_CAMPAIGNS: EmailCampaign[] = [
+//   {
+//     id: "campaign-1",
+//     name: "Welcome Series",
+//     subject_line: "Welcome to our community!",
+//     campaign_type: "sequence",
+//     status: "active",
+//     created_at: new Date().toISOString(),
+//     stats: {
+//       sent: 1250,
+//       delivered: 1200,
+//       opened: 480,
+//       clicked: 96,
+//       unsubscribed: 5,
+//       bounced: 15,
+//     },
+//   },
+//   {
+//     id: "campaign-2",
+//     name: "Product Launch",
+//     subject_line: "We just launched something new 🚀",
+//     campaign_type: "one-time",
+//     status: "completed",
+//     created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
+//     stats: {
+//       sent: 3500,
+//       delivered: 3400,
+//       opened: 1360,
+//       clicked: 272,
+//       unsubscribed: 12,
+//       bounced: 28,
+//     },
+//   },
+//   {
+//     id: "campaign-3",
+//     name: "Monthly Newsletter",
+//     subject_line: "Your monthly update is here",
+//     campaign_type: "automation",
+//     status: "paused",
+//     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
+//     stats: {
+//       sent: 892,
+//       delivered: 875,
+//       opened: 385,
+//       clicked: 67,
+//       unsubscribed: 3,
+//       bounced: 8,
+//     },
+//   },
+// ];
+
+// /* =====================
+//    Component (Mock only)
+// ===================== */
+
+// const CampaignDashboard = ({
+//   onCreateCampaign,
+//   onViewCampaign,
+//   onEditCampaign,
+// }: CampaignDashboardProps) => {
+//   const [campaigns] = useState<EmailCampaign[]>(MOCK_CAMPAIGNS);
+//   const [searchTerm, setSearchTerm] = useState<string>("");
+//   const [filterStatus, setFilterStatus] = useState<CampaignStatus | "all">(
+//     "all"
+//   );
+
+//   const filteredCampaigns = campaigns.filter((campaign) => {
+//     const matchesSearch =
+//       campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       campaign.subject_line.toLowerCase().includes(searchTerm.toLowerCase());
+
+//     const matchesStatus =
+//       filterStatus === "all" || campaign.status === filterStatus;
+
+//     return matchesSearch && matchesStatus;
+//   });
+
+//   const getStatusColor = (status: CampaignStatus) => {
+//     switch (status) {
+//       case "active":
+//         return "bg-green-100 text-green-800 border-green-200";
+//       case "paused":
+//         return "bg-yellow-100 text-yellow-800 border-yellow-200";
+//       case "completed":
+//         return "bg-blue-100 text-blue-800 border-blue-200";
+//       case "draft":
+//       default:
+//         return "bg-gray-100 text-gray-800 border-gray-200";
+//     }
+//   };
+
+//   const getCampaignTypeIcon = (type: CampaignType) => {
+//     switch (type) {
+//       case "sequence":
+//         return <Mail className="w-6 h-6" />;
+//       case "automation":
+//         return <Users className="w-6 h-6" />;
+//       case "one-time":
+//         return <MousePointer className="w-6 h-6" />;
+//       default:
+//         return <Mail className="w-6 h-6" />;
+//     }
+//   };
+
+//   const calculateRate = (value: number, sent: number) => {
+//     if (!sent) return "0%";
+//     return ((value / sent) * 100).toFixed(1) + "%";
+//   };
+
+//   return (
+//     <div className="space-y-6">
+//       {/* Header */}
+//       <div className="flex flex-col sm:flex-row gap-4 justify-between">
+//         <div className="relative w-full sm:max-w-md">
+//           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+//           <Input
+//             placeholder="Search campaigns..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="pl-10"
+//           />
+//         </div>
+
+//         <div className="flex gap-2">
+//           <select
+//             value={filterStatus}
+//             onChange={(e) =>
+//               setFilterStatus(e.target.value as CampaignStatus | "all")
+//             }
+//             className="px-3 py-2 border rounded-md text-sm"
+//           >
+//             <option value="all">All Status</option>
+//             <option value="active">Active</option>
+//             <option value="paused">Paused</option>
+//             <option value="completed">Completed</option>
+//             <option value="draft">Draft</option>
+//           </select>
+
+//           <Button onClick={onCreateCampaign}>
+//             <Mail className="w-4 h-4 mr-2" />
+//             New Campaign
+//           </Button>
+//         </div>
+//       </div>
+
+//       {/* Campaign list */}
+//       <div className="grid grid-cols-1 gap-6">
+//         {filteredCampaigns.map((campaign) => (
+//           <Card key={campaign.id} className="hover:shadow-md transition">
+//             <CardHeader className="pb-4">
+//               <div className="flex justify-between">
+//                 <div className="flex gap-3">
+//                   <div className="text-gray-700">
+//                     {getCampaignTypeIcon(campaign.campaign_type)}
+//                   </div>
+//                   <div>
+//                     <CardTitle className="text-lg">{campaign.name}</CardTitle>
+//                     <p className="text-sm text-gray-600">
+//                       {campaign.subject_line}
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 <div className="flex items-center gap-2">
+//                   <Badge
+//                     variant="outline"
+//                     className={getStatusColor(campaign.status)}
+//                   >
+//                     {campaign.status}
+//                   </Badge>
+
+//                   <DropdownMenu>
+//                     <DropdownMenuTrigger asChild>
+//                       <Button variant="ghost" size="sm">
+//                         <MoreVertical className="w-4 h-4" />
+//                       </Button>
+//                     </DropdownMenuTrigger>
+//                     <DropdownMenuContent align="end">
+//                       <DropdownMenuItem
+//                         onClick={() => onViewCampaign(campaign)}
+//                       >
+//                         <Eye className="w-4 h-4 mr-2" /> View
+//                       </DropdownMenuItem>
+//                       <DropdownMenuItem
+//                         onClick={() => onEditCampaign(campaign)}
+//                       >
+//                         <Edit className="w-4 h-4 mr-2" /> Edit
+//                       </DropdownMenuItem>
+//                       {campaign.status === "active" && (
+//                         <DropdownMenuItem>
+//                           <Pause className="w-4 h-4 mr-2" /> Pause
+//                         </DropdownMenuItem>
+//                       )}
+//                       {campaign.status === "paused" && (
+//                         <DropdownMenuItem>
+//                           <Play className="w-4 h-4 mr-2" /> Resume
+//                         </DropdownMenuItem>
+//                       )}
+//                       <DropdownMenuItem className="text-red-600">
+//                         <Trash2 className="w-4 h-4 mr-2" /> Delete
+//                       </DropdownMenuItem>
+//                     </DropdownMenuContent>
+//                   </DropdownMenu>
+//                 </div>
+//               </div>
+//             </CardHeader>
+
+//             <CardContent>
+//               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+//                 <Stat
+//                   icon={<Mail />}
+//                   label="Sent"
+//                   value={campaign.stats.sent}
+//                 />
+//                 <Stat
+//                   icon={<Eye />}
+//                   label="Open Rate"
+//                   value={calculateRate(
+//                     campaign.stats.opened,
+//                     campaign.stats.sent
+//                   )}
+//                 />
+//                 <Stat
+//                   icon={<MousePointer />}
+//                   label="Click Rate"
+//                   value={calculateRate(
+//                     campaign.stats.clicked,
+//                     campaign.stats.sent
+//                   )}
+//                 />
+//                 <Stat
+//                   icon={<TrendingUp />}
+//                   label="Clicks"
+//                   value={campaign.stats.clicked}
+//                 />
+//                 <Stat
+//                   icon={<Users />}
+//                   label="Unsubscribed"
+//                   value={campaign.stats.unsubscribed}
+//                 />
+//               </div>
+
+//               <div className="mt-4 pt-4 border-t text-sm text-gray-600 flex justify-between">
+//                 <span>Type: {campaign.campaign_type.replace("-", " ")}</span>
+//                 <span>
+//                   Created: {new Date(campaign.created_at).toLocaleDateString()}
+//                 </span>
+//               </div>
+//             </CardContent>
+//           </Card>
+//         ))}
+//       </div>
+
+//       {filteredCampaigns.length === 0 && (
+//         <Card>
+//           <CardContent className="p-8 text-center">
+//             <Mail className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+//             <h3 className="text-xl font-semibold">No campaigns found</h3>
+//             <p className="text-gray-600 mt-2 mb-4">
+//               {searchTerm
+//                 ? "No campaigns match your search"
+//                 : "You haven't created any campaigns yet"}
+//             </p>
+//             <Button onClick={onCreateCampaign}>
+//               <Mail className="w-4 h-4 mr-2" /> Create Campaign
+//             </Button>
+//           </CardContent>
+//         </Card>
+//       )}
+//     </div>
+//   );
+// };
+
+// const Stat = ({
+//   icon,
+//   label,
+//   value,
+// }: {
+//   icon: React.ReactNode;
+//   label: string;
+//   value: number | string;
+// }) => (
+//   <div className="flex flex-col items-center bg-gray-50 rounded-lg py-3">
+//     <div className="w-5 h-5 text-gray-500 mb-1">{icon}</div>
+//     <div className="text-xl font-bold text-gray-900">{value}</div>
+//     <div className="text-xs text-gray-600">{label}</div>
+//   </div>
+// );
+
+// export default CampaignDashboard;

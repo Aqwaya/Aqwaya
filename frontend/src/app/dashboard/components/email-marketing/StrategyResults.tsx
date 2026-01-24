@@ -153,7 +153,7 @@ const StrategyResults = ({
                     Your Competitive Advantages:
                   </h4>
                   <ul className="space-y-1">
-                    {generatedStrategy.overview.competitive_advantages.map(
+                    {generatedStrategy.overview.competitive_advantages?.map(
                       (advantage: string, index: number) => (
                         <li key={index} className="flex items-center space-x-2">
                           <CheckCircle className="w-4 h-4 text-green-600" />
@@ -502,3 +502,369 @@ const StrategyResults = ({
 };
 
 export default StrategyResults;
+
+// "use client";
+
+// import { useState, JSX } from "react";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Button } from "@/components/ui/button";
+// import { Badge } from "@/components/ui/badge";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import {
+//   ArrowLeft,
+//   Target,
+//   Calendar,
+//   Users,
+//   TrendingUp,
+//   CheckCircle,
+//   Play,
+//   Download,
+// } from "lucide-react";
+// import StrategyImplementation from "./StrategyImplementation";
+// import { EmailStrategy } from "@/types/emailStrategy";
+
+// /* ================= TYPES ================= */
+
+// type Priority = "high" | "medium" | "immediate" | "low";
+
+// interface SuggestedEmail {
+//   subject: string;
+//   purpose: string;
+//   day?: number;
+//   week?: number;
+// }
+
+// interface RecommendedWorkflow {
+//   type: string;
+//   name: string;
+//   description: string;
+//   priority: Priority;
+//   suggested_emails: SuggestedEmail[];
+// }
+
+// interface NextStep {
+//   step: string;
+//   action: string;
+//   priority: Priority;
+// }
+
+// interface ContentTheme {
+//   theme: string;
+//   content_type: string;
+// }
+
+// interface Segment {
+//   name: string;
+//   criteria: string;
+//   messaging_focus: string;
+// }
+
+// interface BehavioralTrigger {
+//   trigger: string;
+//   action: string;
+// }
+
+// interface SegmentationStrategy {
+//   primary_segments: Segment[];
+//   behavioral_triggers: BehavioralTrigger[];
+// }
+
+// interface KPI {
+//   metric: string;
+//   target: string;
+//   industry_benchmark: string;
+// }
+
+// interface SuccessMetrics {
+//   primary_kpis: KPI[];
+//   optimization_recommendations: string[];
+// }
+
+// /* ================= PROPS ================= */
+
+// interface StrategyResultsProps {
+//   strategy: EmailStrategy;
+//   onBack: () => void;
+//   onImplement: (workflowType: string) => void;
+// }
+
+// /* ================= COMPONENT ================= */
+
+// const StrategyResults = ({
+//   strategy,
+//   onBack,
+//   onImplement,
+// }: StrategyResultsProps): JSX.Element => {
+//   const [activeTab, setActiveTab] = useState<string>("overview");
+//   const [implementingWorkflow, setImplementingWorkflow] = useState<
+//     string | null
+//   >(null);
+
+//   const { generated_strategy } = strategy;
+
+//   /* ================= HELPERS ================= */
+
+//   const getPriorityColor = (priority: Priority): string => {
+//     switch (priority) {
+//       case "high":
+//         return "bg-red-100 text-red-800";
+//       case "medium":
+//         return "bg-yellow-100 text-yellow-800";
+//       case "immediate":
+//         return "bg-purple-100 text-purple-800";
+//       default:
+//         return "bg-gray-100 text-gray-800";
+//     }
+//   };
+
+//   /* ================= IMPLEMENT FLOW ================= */
+
+//   if (implementingWorkflow) {
+//     return (
+//       <StrategyImplementation
+//         strategy={strategy}
+//         workflowType={implementingWorkflow}
+//         onComplete={() => {
+//           setImplementingWorkflow(null);
+//           onImplement(implementingWorkflow);
+//         }}
+//       />
+//     );
+//   }
+
+//   /* ================= UI ================= */
+
+//   return (
+//     <div className="space-y-6">
+//       {/* HEADER */}
+//       <div className="flex items-center justify-between">
+//         <div className="flex items-center space-x-4">
+//           <Button variant="outline" onClick={onBack}>
+//             <ArrowLeft className="w-4 h-4 mr-2" />
+//             Back
+//           </Button>
+//           <div>
+//             <h1 className="text-3xl font-bold">Your AI Email Strategy</h1>
+//             <p className="text-gray-600">
+//               Personalized recommendations for {strategy.name}
+//             </p>
+//           </div>
+//         </div>
+
+//         <Button className="bg-gradient-to-r from-green-600 to-blue-600">
+//           <Download className="w-4 h-4 mr-2" />
+//           Export Strategy
+//         </Button>
+//       </div>
+
+//       {/* TABS */}
+//       <Tabs value={activeTab} onValueChange={setActiveTab}>
+//         <TabsList className="grid w-full grid-cols-5">
+//           <TabsTrigger value="overview">Overview</TabsTrigger>
+//           <TabsTrigger value="workflows">Workflows</TabsTrigger>
+//           <TabsTrigger value="content">Content Plan</TabsTrigger>
+//           <TabsTrigger value="segmentation">Segmentation</TabsTrigger>
+//           <TabsTrigger value="metrics">Success Metrics</TabsTrigger>
+//         </TabsList>
+
+//         {/* OVERVIEW */}
+//         <TabsContent value="overview" className="space-y-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             <Card>
+//               <CardHeader>
+//                 <CardTitle className="flex items-center gap-2">
+//                   <Target className="w-5 h-5 text-blue-600" />
+//                   Business Assessment
+//                 </CardTitle>
+//               </CardHeader>
+//               <CardContent>
+//                 <p className="text-gray-700">
+//                   {generated_strategy.overview.business_assessment}
+//                 </p>
+
+//                 <div className="mt-4">
+//                   <h4 className="font-semibold mb-2">
+//                     Your Competitive Advantages:
+//                   </h4>
+//                   <ul className="space-y-1">
+//                     {generated_strategy.overview.competitive_advantages?.map(
+//                       (advantage, index) => (
+//                         <li key={index} className="flex items-center gap-2">
+//                           <CheckCircle className="w-4 h-4 text-green-600" />
+//                           <span className="text-sm">{advantage}</span>
+//                         </li>
+//                       )
+//                     )}
+//                   </ul>
+//                 </div>
+//               </CardContent>
+//             </Card>
+
+//             <Card>
+//               <CardHeader>
+//                 <CardTitle className="flex items-center gap-2">
+//                   <Users className="w-5 h-5 text-purple-600" />
+//                   Audience Insights
+//                 </CardTitle>
+//               </CardHeader>
+//               <CardContent>
+//                 <p className="text-gray-700">
+//                   {generated_strategy.overview.target_audience_insights}
+//                 </p>
+//               </CardContent>
+//             </Card>
+//           </div>
+//         </TabsContent>
+
+//         {/* WORKFLOWS */}
+//         <TabsContent value="workflows" className="space-y-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             {generated_strategy.recommended_workflows.map((workflow) => (
+//               <Card key={workflow.type}>
+//                 <CardHeader>
+//                   <div className="flex items-center justify-between">
+//                     <CardTitle className="flex items-center gap-2">
+//                       <Play className="w-5 h-5 text-green-600" />
+//                       {workflow.name}
+//                     </CardTitle>
+//                     <Badge className={getPriorityColor(workflow.priority)}>
+//                       {workflow.priority} priority
+//                     </Badge>
+//                   </div>
+//                 </CardHeader>
+
+//                 <CardContent>
+//                   <p className="text-gray-700 mb-4">{workflow.description}</p>
+
+//                   <div className="space-y-3">
+//                     <h4 className="font-semibold">Email Sequence:</h4>
+//                     {workflow.suggested_emails.map((email, idx) => (
+//                       <div
+//                         key={idx}
+//                         className="border-l-4 border-blue-200 pl-3"
+//                       >
+//                         <div className="flex justify-between">
+//                           <span className="font-medium text-sm">
+//                             {email.subject}
+//                           </span>
+//                           <span className="text-xs text-gray-500">
+//                             {email.day !== undefined
+//                               ? `Day ${email.day}`
+//                               : `Week ${email.week}`}
+//                           </span>
+//                         </div>
+//                         <p className="text-xs text-gray-600">{email.purpose}</p>
+//                       </div>
+//                     ))}
+//                   </div>
+
+//                   <Button
+//                     className="w-full mt-4"
+//                     onClick={() => setImplementingWorkflow(workflow.type)}
+//                   >
+//                     Implement This Workflow
+//                   </Button>
+//                 </CardContent>
+//               </Card>
+//             ))}
+//           </div>
+//         </TabsContent>
+
+//         {/* CONTENT */}
+//         <TabsContent value="content">
+//           <Card>
+//             <CardHeader>
+//               <CardTitle className="flex items-center gap-2">
+//                 <Calendar className="w-5 h-5 text-blue-600" />
+//                 Content Calendar
+//               </CardTitle>
+//             </CardHeader>
+//             <CardContent>
+//               <Badge variant="secondary" className="mb-4">
+//                 {generated_strategy.content_calendar.frequency_recommendation}
+//               </Badge>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 {generated_strategy.content_calendar.weekly_themes.map(
+//                   (theme, index) => (
+//                     <div key={index} className="p-4 border rounded-lg">
+//                       <h5 className="font-medium text-blue-600">
+//                         {theme.theme}
+//                       </h5>
+//                       <p className="text-sm text-gray-600">
+//                         {theme.content_type}
+//                       </p>
+//                     </div>
+//                   )
+//                 )}
+//               </div>
+//             </CardContent>
+//           </Card>
+//         </TabsContent>
+
+//         {/* SEGMENTATION */}
+//         <TabsContent value="segmentation">
+//           <Card>
+//             <CardHeader>
+//               <CardTitle className="flex items-center gap-2">
+//                 <Users className="w-5 h-5 text-purple-600" />
+//                 Segmentation Strategy
+//               </CardTitle>
+//             </CardHeader>
+//             <CardContent>
+//               {generated_strategy.segmentation_strategy.primary_segments.map(
+//                 (segment, index) => (
+//                   <div key={index} className="mb-4 p-4 border rounded-lg">
+//                     <div className="flex justify-between mb-2">
+//                       <h5 className="font-medium">{segment.name}</h5>
+//                       <Badge variant="outline">{segment.criteria}</Badge>
+//                     </div>
+//                     <p className="text-sm text-gray-600">
+//                       {segment.messaging_focus}
+//                     </p>
+//                   </div>
+//                 )
+//               )}
+//             </CardContent>
+//           </Card>
+//         </TabsContent>
+
+//         {/* METRICS */}
+//         <TabsContent value="metrics">
+//           <Card>
+//             <CardHeader>
+//               <CardTitle className="flex items-center gap-2">
+//                 <TrendingUp className="w-5 h-5 text-green-600" />
+//                 Success Metrics
+//               </CardTitle>
+//             </CardHeader>
+//             <CardContent>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 {generated_strategy.success_metrics.primary_kpis.map(
+//                   (kpi, index) => (
+//                     <div key={index} className="p-4 border rounded-lg">
+//                       <h5 className="font-medium text-blue-600">
+//                         {kpi.metric}
+//                       </h5>
+//                       <p className="text-sm">
+//                         Target:{" "}
+//                         <span className="font-semibold text-green-600">
+//                           {kpi.target}
+//                         </span>
+//                       </p>
+//                       <p className="text-sm text-gray-600">
+//                         Industry Avg: {kpi.industry_benchmark}
+//                       </p>
+//                     </div>
+//                   )
+//                 )}
+//               </div>
+//             </CardContent>
+//           </Card>
+//         </TabsContent>
+//       </Tabs>
+//     </div>
+//   );
+// };
+
+// export default StrategyResults;

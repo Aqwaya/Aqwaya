@@ -331,7 +331,7 @@ const LandingPageBuilder = ({ onBack }: LandingPageBuilderProps) => {
       case 1:
         return (
           <BasicInfoStep
-            formData={formData}
+            formData={{ ...formData, colorScheme: formData.colorScheme || "" }}
             handleInputChange={handleInputChange}
           >
             <div>

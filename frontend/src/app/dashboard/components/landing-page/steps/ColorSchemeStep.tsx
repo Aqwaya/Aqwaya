@@ -11,7 +11,11 @@ interface ColorScheme {
 interface Props {
   colorSchemes: ColorScheme[];
   formData: {
+<<<<<<< HEAD
     colorScheme: string;
+=======
+    colorScheme?: string;
+>>>>>>> 31ab30e (update)
   };
   handleInputChange: (field: string, value: string) => void;
 }

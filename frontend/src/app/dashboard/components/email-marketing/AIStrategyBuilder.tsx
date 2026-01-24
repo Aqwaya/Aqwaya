@@ -1,6 +1,384 @@
+// "use client";
+
+// import { useState } from "react";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Textarea } from "@/components/ui/textarea";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { Checkbox } from "@/components/ui/checkbox";
+// import {
+//   ArrowLeft,
+//   Wand2,
+//   Target,
+//   Mail,
+//   TrendingUp,
+//   Zap,
+//   AlertCircle,
+//   CheckCircle2,
+// } from "lucide-react";
+// import { useToast } from "@/hooks/use-toast";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import type { EmailStrategy } from "@/types/emailStrategy";
+
+// /* -------------------- Types -------------------- */
+
+// interface User {
+//   id: string;
+//   name: string;
+//   email?: string;
+// }
+
+// interface AIStrategyBuilderProps {
+//   user: User;
+//   onBack: () => void;
+//   onComplete: (strategy: EmailStrategy) => void;
+// }
+
+// interface BusinessInfo {
+//   business_name: string;
+//   business_type: string;
+//   industry: string;
+//   target_audience: string;
+//   customer_pain_points: string;
+//   unique_value_proposition: string;
+//   marketing_goals: string[];
+//   current_challenges: string[];
+//   email_frequency: string;
+//   content_preferences: {
+//     tone: string;
+//     style: string;
+//     content_types: string[];
+//   };
+// }
+
+// /* -------------------- Component -------------------- */
+
+// const AIStrategyBuilder = ({
+//   user,
+//   onBack,
+//   onComplete,
+// }: AIStrategyBuilderProps) => {
+//   const { toast } = useToast();
+
+//   const [currentStep, setCurrentStep] = useState<number>(1);
+//   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
+//     business_name: "",
+//     business_type: "",
+//     industry: "",
+//     target_audience: "",
+//     customer_pain_points: "",
+//     unique_value_proposition: "",
+//     marketing_goals: [],
+//     current_challenges: [],
+//     email_frequency: "",
+//     content_preferences: {
+//       tone: "",
+//       style: "",
+//       content_types: [],
+//     },
+//   });
+
+//   /* -------------------- Static Data -------------------- */
+
+//   const businessTypes = [
+//     "E-commerce",
+//     "SaaS",
+//     "Consulting",
+//     "Education",
+//     "Healthcare",
+//     "Real Estate",
+//     "Finance",
+//     "Non-profit",
+//     "B2B Services",
+//     "Restaurant/Food",
+//   ];
+
+//   const marketingGoals = [
+//     "Increase sales revenue",
+//     "Build brand awareness",
+//     "Nurture leads",
+//     "Customer retention",
+//     "Product launches",
+//     "Educational content",
+//     "Event promotion",
+//     "Customer onboarding",
+//   ];
+
+//   const challenges = [
+//     "Low email open rates",
+//     "Poor conversion rates",
+//     "Lack of engaging content",
+//     "Email deliverability issues",
+//     "Growing subscriber list",
+//     "Automation setup",
+//     "Segmentation strategy",
+//     "A/B testing implementation",
+//   ];
+
+//   const contentTypes = [
+//     "Newsletters",
+//     "Product updates",
+//     "Educational content",
+//     "Case studies",
+//     "Behind-the-scenes",
+//     "Customer stories",
+//     "Industry insights",
+//     "How-to guides",
+//   ];
+
+//   /* -------------------- Handlers -------------------- */
+
+//   const handleToggle = (
+//     key: "marketing_goals" | "current_challenges",
+//     value: string
+//   ) => {
+//     setBusinessInfo((prev) => ({
+//       ...prev,
+//       [key]: prev[key].includes(value)
+//         ? prev[key].filter((v) => v !== value)
+//         : [...prev[key], value],
+//     }));
+//   };
+
+//   const handleContentTypeToggle = (type: string) => {
+//     setBusinessInfo((prev) => ({
+//       ...prev,
+//       content_preferences: {
+//         ...prev.content_preferences,
+//         content_types: prev.content_preferences.content_types.includes(type)
+//           ? prev.content_preferences.content_types.filter((t) => t !== type)
+//           : [...prev.content_preferences.content_types, type],
+//       },
+//     }));
+//   };
+
+//   const validateForm = (): boolean => {
+//     if (!businessInfo.business_name.trim()) {
+//       setError("Business name is required");
+//       return false;
+//     }
+//     if (!businessInfo.business_type) {
+//       setError("Please select a business type");
+//       return false;
+//     }
+//     if (businessInfo.marketing_goals.length === 0) {
+//       setError("Please select at least one marketing goal");
+//       return false;
+//     }
+//     setError(null);
+//     return true;
+//   };
+
+//   /* -------------------- Strategy Generation -------------------- */
+
+//   const generateStrategy = async (): Promise<void> => {
+//     if (!validateForm()) return;
+
+//     setIsGenerating(true);
+//     setError(null);
+
+//     try {
+//       const strategy: EmailStrategy = {
+//         id: `strategy-${Date.now()}`,
+//         name: `${businessInfo.business_name} AI Email Strategy`,
+//         business_type: businessInfo.business_type,
+//         marketing_goals: businessInfo.marketing_goals,
+//         created_at: new Date().toISOString(),
+
+//         overview: {
+//           business_assessment: "Strong online presence",
+//           competitive_advantages: ["Personalized campaigns", "High CTR"],
+//           target_audience_insights:
+//             "Young professionals aged 25–35 in e-commerce",
+//         },
+
+//         generated_strategy: {
+//           overview: {
+//             business_assessment: "Strong online presence",
+//             competitive_advantages: ["Personalized campaigns", "High CTR"],
+//             target_audience_insights:
+//               "Young professionals aged 25–35 in e-commerce",
+//           },
+//           next_steps: [
+//             {
+//               step: "Setup automation",
+//               action: "Connect CRM",
+//               priority: "high",
+//             },
+//           ],
+//           recommended_workflows: [
+//             {
+//               name: "Welcome Workflow",
+//               type: "Automation",
+//               description: "Send a series of emails for new subscribers",
+//               suggested_emails: [
+//                 {
+//                   subject: "Welcome to our family!",
+//                   day: 1,
+//                   purpose: "Greeting",
+//                 },
+//               ],
+//               priority: "high",
+//             },
+//           ],
+//           content_calendar: {
+//             frequency_recommendation: "3x per week",
+//             weekly_themes: [
+//               { theme: "Customer Stories", content_type: "Email" },
+//               { theme: "Promotions", content_type: "Email" },
+//             ],
+//           },
+//           segmentation_strategy: {
+//             primary_segments: [
+//               {
+//                 name: "New Subscribers",
+//                 criteria: "Joined <30 days",
+//                 messaging_focus: "Onboarding",
+//               },
+//             ],
+//             behavioral_triggers: [
+//               { trigger: "No open after 7 days", action: "Resend email" },
+//             ],
+//           },
+//           success_metrics: {
+//             primary_kpis: [
+//               {
+//                 metric: "Open Rate",
+//                 target: "20%",
+//                 industry_benchmark: "25%",
+//               },
+//             ],
+//             optimization_recommendations: [
+//               "Test subject lines weekly",
+//               "Improve call-to-action buttons",
+//             ],
+//           },
+//         },
+
+//         target_audience_profile: {
+//           description: businessInfo.target_audience,
+//           pain_points: businessInfo.customer_pain_points,
+//           value_proposition: businessInfo.unique_value_proposition,
+//           industry: businessInfo.industry,
+//         },
+//       };
+
+//       toast({
+//         title: "🎉 AI Strategy Generated Successfully!",
+//         description: `Strategy for ${businessInfo.business_name} is ready.`,
+//       });
+
+//       onComplete(strategy);
+//     } catch (err: unknown) {
+//       const message =
+//         err instanceof Error
+//           ? err.message
+//           : "Failed to generate strategy. Please try again.";
+
+//       setError(message);
+
+//       toast({
+//         title: "Strategy Generation Failed",
+//         description: message,
+//         variant: "destructive",
+//       });
+//     } finally {
+//       setIsGenerating(false);
+//     }
+//   };
+
+//   /* -------------------- Render -------------------- */
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 p-6">
+//       <Button variant="outline" onClick={onBack}>
+//         <ArrowLeft className="w-4 h-4 mr-2" />
+//         Back
+//       </Button>
+
+//       {error && (
+//         <Alert variant="destructive" className="my-4">
+//           <AlertCircle className="h-4 w-4" />
+//           <AlertDescription>{error}</AlertDescription>
+//         </Alert>
+//       )}
+
+//       <Card className="mt-6">
+//         <CardHeader>
+//           <CardTitle>AI Email Strategy Builder</CardTitle>
+//         </CardHeader>
+
+//         <CardContent className="space-y-6">
+//           {currentStep === 1 && (
+//             <>
+//               <Label>Business Name *</Label>
+//               <Input
+//                 value={businessInfo.business_name}
+//                 onChange={(e) =>
+//                   setBusinessInfo((p) => ({
+//                     ...p,
+//                     business_name: e.target.value,
+//                   }))
+//                 }
+//               />
+//             </>
+//           )}
+
+//           <div className="flex justify-between">
+//             <Button
+//               variant="outline"
+//               disabled={currentStep === 1}
+//               onClick={() => setCurrentStep((s) => Math.max(1, s - 1))}
+//             >
+//               Previous
+//             </Button>
+
+//             {currentStep < 3 ? (
+//               <Button onClick={() => setCurrentStep((s) => s + 1)}>Next</Button>
+//             ) : (
+//               <Button onClick={generateStrategy} disabled={isGenerating}>
+//                 {isGenerating ? (
+//                   <>
+//                     <Zap className="w-4 h-4 mr-2 animate-spin" />
+//                     Generating...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Wand2 className="w-4 h-4 mr-2" />
+//                     Generate Strategy
+//                   </>
+//                 )}
+//               </Button>
+//             )}
+//           </div>
+//         </CardContent>
+//       </Card>
+//     </div>
+//   );
+// };
+
+// export default AIStrategyBuilder;
+
 "use client";
+
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,8 +401,8 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+<<<<<<< HEAD
 
 // Local User type
 type AIStrategy = {
@@ -48,6 +426,30 @@ type AIStrategy = {
     industry: string;
   };
 };
+=======
+import type { EmailStrategy } from "@/types/emailStrategy";
+import type { User } from "@/lib/mockUser";
+
+/* -------------------- TYPES -------------------- */
+
+interface ContentPreferences {
+  tone: string;
+  style: string;
+  content_types: string[];
+}
+
+interface BusinessInfo {
+  business_type: string;
+  industry: string;
+  target_audience: string;
+  customer_pain_points: string;
+  unique_value_proposition: string;
+  marketing_goals: string[];
+  current_challenges: string[];
+  email_frequency: string;
+  content_preferences: ContentPreferences;
+}
+>>>>>>> 31ab30e (update)
 
 interface AIStrategyBuilderProps {
   user: unknown;
@@ -55,27 +457,35 @@ interface AIStrategyBuilderProps {
   onComplete: (strategy: AIStrategy) => void;
 }
 
-const AIStrategyBuilder = ({ onBack, onComplete }: AIStrategyBuilderProps) => {
-  const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isGenerating, setIsGenerating] = useState(false);
+
+/* -------------------- COMPONENT -------------------- */
+
+const AIStrategyBuilder = ({
+  user,
+  onBack,
+  onComplete,
+}: AIStrategyBuilderProps) => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [businessInfo, setBusinessInfo] = useState({
-    business_name: "",
+
+  const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
     business_type: "",
     industry: "",
     target_audience: "",
     customer_pain_points: "",
     unique_value_proposition: "",
-    marketing_goals: [] as string[],
-    current_challenges: [] as string[],
+    marketing_goals: [],
+    current_challenges: [],
     email_frequency: "",
     content_preferences: {
       tone: "",
       style: "",
-      content_types: [] as string[],
+      content_types: [],
     },
   });
+
+  /* -------------------- DATA -------------------- */
 
   const businessTypes = [
     "E-commerce",
@@ -123,61 +533,54 @@ const AIStrategyBuilder = ({ onBack, onComplete }: AIStrategyBuilderProps) => {
     "How-to guides",
   ];
 
-  const handleGoalToggle = (goal: string) => {
-    setBusinessInfo((prev) => ({
-      ...prev,
-      marketing_goals: prev.marketing_goals.includes(goal)
-        ? prev.marketing_goals.filter((g) => g !== goal)
-        : [...prev.marketing_goals, goal],
-    }));
+  /* -------------------- HELPERS -------------------- */
+
+  const toggleItem = (
+    list: string[],
+    value: string,
+    key: "marketing_goals" | "current_challenges" | "content_types"
+  ) => {
+    setBusinessInfo((prev) => {
+      if (key === "content_types") {
+        const types = prev.content_preferences.content_types.includes(value)
+          ? prev.content_preferences.content_types.filter((v) => v !== value)
+          : [...prev.content_preferences.content_types, value];
+
+        return {
+          ...prev,
+          content_preferences: { ...prev.content_preferences, content_types: types },
+        };
+      }
+
+      const updatedList = list.includes(value)
+        ? list.filter((v) => v !== value)
+        : [...list, value];
+
+      return { ...prev, [key]: updatedList } as BusinessInfo;
+    });
   };
 
-  const handleChallengeToggle = (challenge: string) => {
-    setBusinessInfo((prev) => ({
-      ...prev,
-      current_challenges: prev.current_challenges.includes(challenge)
-        ? prev.current_challenges.filter((c) => c !== challenge)
-        : [...prev.current_challenges, challenge],
-    }));
-  };
-
-  const handleContentTypeToggle = (type: string) => {
-    setBusinessInfo((prev) => ({
-      ...prev,
-      content_preferences: {
-        ...prev.content_preferences,
-        content_types: prev.content_preferences.content_types.includes(type)
-          ? prev.content_preferences.content_types.filter((t) => t !== type)
-          : [...prev.content_preferences.content_types, type],
-      },
-    }));
-  };
-
-  const validateForm = () => {
-    if (!businessInfo.business_name.trim()) {
-      setError("Business name is required");
-      return false;
-    }
+  const validateForm = (): boolean => {
     if (!businessInfo.business_type) {
       setError("Please select a business type");
       return false;
     }
     if (businessInfo.marketing_goals.length === 0) {
-      setError("Please select at least one marketing goal");
+      setError("Select at least one marketing goal");
       return false;
     }
     setError(null);
     return true;
   };
 
+  /* -------------------- MOCK GENERATION -------------------- */
+
   const generateStrategy = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsGenerating(true);
-    setError(null);
 
+<<<<<<< HEAD
     try {
       // Simulate AI strategy generation with mock data
       const aiStrategy = {
@@ -225,310 +628,103 @@ const AIStrategyBuilder = ({ onBack, onComplete }: AIStrategyBuilderProps) => {
         variant: "destructive",
       });
     } finally {
+=======
+    // Mock AI delay
+    setTimeout(() => {
+      console.log("Mock AI Strategy Generated:", businessInfo);
+>>>>>>> 31ab30e (update)
       setIsGenerating(false);
-    }
+      alert("✅ AI Strategy generated successfully (frontend mock)");
+    }, 2000);
   };
+
+  /* -------------------- RENDER STEPS -------------------- */
 
   const renderStep1 = () => (
     <div className="space-y-6">
       <div className="text-center">
         <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Business Information</h2>
-        <p className="text-gray-600">
-          Tell us about your business to create a tailored AI email strategy
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="business_name">Business Name *</Label>
-          <Input
-            id="business_name"
-            value={businessInfo.business_name}
-            onChange={(e) =>
-              setBusinessInfo((prev) => ({
-                ...prev,
-                business_name: e.target.value,
-              }))
-            }
-            placeholder="Your business name"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="business_type">Business Type *</Label>
-          <Select
-            value={businessInfo.business_type}
-            onValueChange={(value) =>
-              setBusinessInfo((prev) => ({ ...prev, business_type: value }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select business type" />
-            </SelectTrigger>
-            <SelectContent>
-              {businessTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="industry">Industry/Niche</Label>
-          <Input
-            id="industry"
-            value={businessInfo.industry}
-            onChange={(e) =>
-              setBusinessInfo((prev) => ({ ...prev, industry: e.target.value }))
-            }
-            placeholder="e.g., Fashion, Technology, Health"
-          />
-        </div>
+        <h2 className="text-2xl font-bold">Business Information</h2>
       </div>
 
       <div>
-        <Label htmlFor="target_audience">Target Audience Description</Label>
-        <Textarea
-          id="target_audience"
-          value={businessInfo.target_audience}
-          onChange={(e) =>
-            setBusinessInfo((prev) => ({
-              ...prev,
-              target_audience: e.target.value,
-            }))
+        <Label>Business Type *</Label>
+        <Select
+          value={businessInfo.business_type}
+          onValueChange={(v) =>
+            setBusinessInfo((p) => ({ ...p, business_type: v }))
           }
-          placeholder="Describe your ideal customers: demographics, interests, behaviors..."
-          rows={3}
-        />
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select business type" />
+          </SelectTrigger>
+          <SelectContent>
+            {businessTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <div>
-        <Label htmlFor="customer_pain_points">Customer Pain Points</Label>
-        <Textarea
-          id="customer_pain_points"
-          value={businessInfo.customer_pain_points}
-          onChange={(e) =>
-            setBusinessInfo((prev) => ({
-              ...prev,
-              customer_pain_points: e.target.value,
-            }))
-          }
-          placeholder="What problems does your business solve for customers?"
-          rows={3}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="unique_value_proposition">
-          Unique Value Proposition
-        </Label>
-        <Textarea
-          id="unique_value_proposition"
-          value={businessInfo.unique_value_proposition}
-          onChange={(e) =>
-            setBusinessInfo((prev) => ({
-              ...prev,
-              unique_value_proposition: e.target.value,
-            }))
-          }
-          placeholder="What makes your business unique? Why should customers choose you?"
-          rows={3}
-        />
-      </div>
+      <Textarea
+        placeholder="Describe your target audience"
+        value={businessInfo.target_audience}
+        onChange={(e) =>
+          setBusinessInfo((p) => ({ ...p, target_audience: e.target.value }))
+        }
+      />
     </div>
   );
 
   const renderStep2 = () => (
     <div className="space-y-6">
-      <div className="text-center">
-        <TrendingUp className="w-12 h-12 text-green-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">
-          Marketing Goals & Challenges
-        </h2>
-        <p className="text-gray-600">
-          Help our AI understand what you want to achieve
-        </p>
-      </div>
-
-      <div>
-        <Label className="text-base font-semibold">
-          Primary Marketing Goals *
-        </Label>
-        <p className="text-sm text-gray-600 mb-4">
-          Select all that apply - AI will prioritize these in your strategy
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {marketingGoals.map((goal) => (
-            <div key={goal} className="flex items-center space-x-2">
-              <Checkbox
-                id={goal}
-                checked={businessInfo.marketing_goals.includes(goal)}
-                onCheckedChange={() => handleGoalToggle(goal)}
-              />
-              <Label htmlFor={goal} className="text-sm">
-                {goal}
-              </Label>
-            </div>
-          ))}
+      <TrendingUp className="w-12 h-12 text-green-600 mx-auto" />
+      {marketingGoals.map((goal) => (
+        <div key={goal} className="flex items-center space-x-2">
+          <Checkbox
+            checked={businessInfo.marketing_goals.includes(goal)}
+            onCheckedChange={() =>
+              toggleItem(businessInfo.marketing_goals, goal, "marketing_goals")
+            }
+          />
+          <Label>{goal}</Label>
         </div>
-      </div>
-
-      <div>
-        <Label className="text-base font-semibold">
-          Current Email Marketing Challenges
-        </Label>
-        <p className="text-sm text-gray-600 mb-4">
-          AI will create solutions for these specific challenges
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {challenges.map((challenge) => (
-            <div key={challenge} className="flex items-center space-x-2">
-              <Checkbox
-                id={challenge}
-                checked={businessInfo.current_challenges.includes(challenge)}
-                onCheckedChange={() => handleChallengeToggle(challenge)}
-              />
-              <Label htmlFor={challenge} className="text-sm">
-                {challenge}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="email_frequency">Preferred Email Frequency</Label>
-        <Select
-          value={businessInfo.email_frequency}
-          onValueChange={(value) =>
-            setBusinessInfo((prev) => ({ ...prev, email_frequency: value }))
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="How often do you want to email subscribers?" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="daily">Daily</SelectItem>
-            <SelectItem value="2-3-times-week">2-3 times per week</SelectItem>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      ))}
     </div>
   );
 
   const renderStep3 = () => (
     <div className="space-y-6">
-      <div className="text-center">
-        <Mail className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Content Preferences</h2>
-        <p className="text-gray-600">
-          AI will generate content matching your brand voice and style
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="tone">Brand Tone</Label>
-          <Select
-            value={businessInfo.content_preferences.tone}
-            onValueChange={(value) =>
-              setBusinessInfo((prev) => ({
-                ...prev,
-                content_preferences: {
-                  ...prev.content_preferences,
-                  tone: value,
-                },
-              }))
+      <Mail className="w-12 h-12 text-purple-600 mx-auto" />
+      {contentTypes.map((type) => (
+        <div key={type} className="flex items-center space-x-2">
+          <Checkbox
+            checked={businessInfo.content_preferences.content_types.includes(type)}
+            onCheckedChange={() =>
+              toggleItem(
+                businessInfo.content_preferences.content_types,
+                type,
+                "content_types"
+              )
             }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select brand tone" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="professional">Professional</SelectItem>
-              <SelectItem value="friendly">Friendly</SelectItem>
-              <SelectItem value="casual">Casual</SelectItem>
-              <SelectItem value="authoritative">Authoritative</SelectItem>
-              <SelectItem value="playful">Playful</SelectItem>
-              <SelectItem value="inspiring">Inspiring</SelectItem>
-            </SelectContent>
-          </Select>
+          />
+          <Label>{type}</Label>
         </div>
-
-        <div>
-          <Label htmlFor="style">Communication Style</Label>
-          <Select
-            value={businessInfo.content_preferences.style}
-            onValueChange={(value) =>
-              setBusinessInfo((prev) => ({
-                ...prev,
-                content_preferences: {
-                  ...prev.content_preferences,
-                  style: value,
-                },
-              }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select communication style" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="direct">Direct & Concise</SelectItem>
-              <SelectItem value="storytelling">Storytelling</SelectItem>
-              <SelectItem value="educational">Educational</SelectItem>
-              <SelectItem value="conversational">Conversational</SelectItem>
-              <SelectItem value="formal">Formal</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label className="text-base font-semibold">
-          Content Types You Want to Send
-        </Label>
-        <p className="text-sm text-gray-600 mb-4">
-          AI will create templates and content for selected types
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {contentTypes.map((type) => (
-            <div key={type} className="flex items-center space-x-2">
-              <Checkbox
-                id={type}
-                checked={businessInfo.content_preferences.content_types.includes(
-                  type
-                )}
-                onCheckedChange={() => handleContentTypeToggle(type)}
-              />
-              <Label htmlFor={type} className="text-sm">
-                {type}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
+      ))}
 
       <div className="bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
-          <CheckCircle2 className="w-5 h-5 mr-2" />
-          🤖 AI Content Generation
-        </h3>
-        <p className="text-sm text-blue-700">
-          Our AI will automatically generate email templates, subject lines, and
-          content calendars based on your preferences. Each piece of content
-          will be personalized to your brand voice and target audience.
-        </p>
+        <CheckCircle2 className="inline mr-2" />
+        AI content will be auto-generated (mocked).
       </div>
     </div>
   );
 
+  /* -------------------- UI -------------------- */
+
   return (
+<<<<<<< HEAD
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
 
       {/* Main Content */}
@@ -536,18 +732,36 @@ const AIStrategyBuilder = ({ onBack, onComplete }: AIStrategyBuilderProps) => {
         <div className="space-y-6">
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={onBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">AI Email Strategy Builder</h1>
-              <p className="text-gray-600">
-                Create a personalized email marketing strategy powered by
-                advanced AI
-              </p>
-            </div>
-          </div>
+=======
+    <div className="max-w-3xl mx-auto space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="w-4 h-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Step {currentStep} of 3</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+
+          <div className="flex justify-between pt-6">
+            <Button
+              variant="outline"
+              disabled={currentStep === 1}
+              onClick={() => setCurrentStep((s) => s - 1)}
+            >
+>>>>>>> 31ab30e (update)
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+
+<<<<<<< HEAD
           {/* Progress Steps */}
           <div className="flex items-center justify-center space-x-4 py-6">
             {[1, 2, 3].map((step) => (
@@ -604,32 +818,31 @@ const AIStrategyBuilder = ({ onBack, onComplete }: AIStrategyBuilderProps) => {
                   <Button onClick={() => setCurrentStep(currentStep + 1)} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                     Next
                   </Button>
+=======
+            {currentStep < 3 ? (
+              <Button onClick={() => setCurrentStep((s) => s + 1)}>
+                Next
+              </Button>
+            ) : (
+              <Button onClick={generateStrategy} disabled={isGenerating}>
+                {isGenerating ? (
+                  <>
+                    <Zap className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+>>>>>>> 31ab30e (update)
                 ) : (
-                  <Button
-                    onClick={generateStrategy}
-                    disabled={isGenerating}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Zap className="w-4 h-4 mr-2 animate-spin" />
-                        AI Generating Your Custom Strategy...
-                      </>
-                    ) : (
-                      <>
-                        <Wand2 className="w-4 h-4 mr-2" />
-                        Generate My AI Strategy
-                      </>
-                    )}
-                  </Button>
+                  <>
+                    <Wand2 className="w-4 h-4 mr-2" />
+                    Generate Strategy
+                  </>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
+}
 export default AIStrategyBuilder;

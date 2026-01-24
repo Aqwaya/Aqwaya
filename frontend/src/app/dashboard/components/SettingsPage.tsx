@@ -213,8 +213,28 @@ import {
   CreditCard,
 } from "lucide-react";
 
+type View =
+  | "dashboard"
+  | "ai-builder"
+  | "email"
+  | "email-strategy-builder"
+  | "campaigns"
+  | "landing-pages"
+  | "landing-page-builder"
+  | "leads"
+  | "whatsapp-goal-selector"
+  | "whatsapp-strategy-builder"
+  | "whatsapp-dashboard"
+  | "analytics"
+  | "settings"
+  | "pricing";
+
 interface SettingsPageProps {
   onBack: () => void;
+<<<<<<< HEAD
+=======
+  onViewChange: (view: View) => void;
+>>>>>>> 31ab30e (update)
 }
 
 const SettingsPage = ({ onBack }: SettingsPageProps) => {

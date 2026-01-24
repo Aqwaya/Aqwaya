@@ -9,6 +9,8 @@ interface Props {
     businessName: string;
     targetAudience: string;
     valueProposition: string;
+    colorScheme?: string;
+    template?: string;
   };
   handleInputChange: (field: string, value: string) => void;
   children?: React.ReactNode;
