@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,66 +21,16 @@ import CampaignCreator from "./email-marketing/CampaignCreator";
 import SegmentManager from "./email-marketing/SegmentManager";
 import AIStrategyBuilder from "./email-marketing/AIStrategyBuilder";
 import StrategyResults from "./email-marketing/StrategyResults";
-<<<<<<< HEAD
-
-type EmailCampaign = {
-  id: string;
-  user_id: string;
-  name: string;
-  subject_line: string;
-  campaign_type: string;
-  status: string;
-  target_segments: string[];
-  content: { html: string; text: string };
-  stats: {
-    sent: number;
-    delivered: number;
-    opened: number;
-    clicked: number;
-    unsubscribed: number;
-    bounced: number;
-  };
-  created_at: string;
-  updated_at: string;
-};
-type EmailStrategy = {
-  id: string;
-  name: string;
-  business_type: string;
-  marketing_goals: string[];
-  created_at: string;
-  generated_strategy: any;
-  target_audience_profile?: { description?: string };
-};
-=======
 import { EmailStrategy } from "@/types/emailStrategy";
-import { EmailCampaign } from "@/types/emailCampaign";
+import { EmailCampaign } from "@/types/campaign";
 import { View } from "../components/Sidebar";
 import EmailGoalSelector from "../components/email-marketing/EmailGoalSelector";
->>>>>>> 31ab30e (update)
 
 interface EmailMarketingProps {
   onBack: () => void;
   onCreateNew?: () => void;
 }
 
-<<<<<<< HEAD
-type View =
-  | "dashboard"
-  | "ai-strategy"
-  | "strategy-results"
-  | "create"
-  | "view"
-  | "edit";
-
-// Mock user for functionality
-const mockUser = {
-  id: "mock-user-123",
-  email: "owner@example.com",
-};
-
-const EmailMarketing = ({ onBack }: EmailMarketingProps) => {
-=======
 interface User {
   id: string;
   name: string;
@@ -107,7 +55,6 @@ interface ApiResponse {
 /* ===== Component ===== */
 
 const EmailMarketing = ({ onBack, onCreateNew }: EmailMarketingProps) => {
->>>>>>> 31ab30e (update)
   const { toast } = useToast();
   const [currentView, setCurrentView] = useState<View>("dashboard"); // Start with dashboard, not AI strategy
   const [selectedCampaign, setSelectedCampaign] =
@@ -360,13 +307,8 @@ const EmailMarketing = ({ onBack, onCreateNew }: EmailMarketingProps) => {
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
-<<<<<<< HEAD
-            onClick={handleOpenAIStrategy}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700"
-=======
             onClick={handleEmailGoalSelector}
             className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700 w-full sm:w-auto"
->>>>>>> 31ab30e (update)
           >
             <Wand2 className="w-4 h-4 mr-2" />
             AI Strategy Builder

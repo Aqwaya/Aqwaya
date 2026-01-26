@@ -1,4 +1,4 @@
-export interface Campaign {
+export interface EmailCampaign {
   id?: string | number;
   name: string;
   type: string;
