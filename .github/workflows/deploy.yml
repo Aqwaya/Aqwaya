@@ -19,16 +19,22 @@ jobs:
             git fetch origin
             git reset --hard origin/main
             
-            
+            # 1. Backend (API)
             cd backend
             npm install --production
-            pm2 restart backend
+            pm2 restart backend || pm2 start index.js --name backend
             
-          
+            # 2. Waitlist (Root Landing Page - Port 3001)
+            cd ../waitlist
+            npm install
+            npm run build
+            pm2 restart waitlist || pm2 start npm --name waitlist -- start -- -p 3001
+            
+            # 3. Frontend (Dashboard - Port 3000)
             cd ../frontend
             npm install 
             export NEXT_FONT_GOOGLE_MOCKED=true
             npm run build 
-            pm2 restart frontend
+            pm2 restart frontend || pm2 start npm --name frontend -- start -- -p 3000
             
             pm2 save
