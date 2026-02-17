@@ -17,21 +17,21 @@ jobs:
             echo "PORT_WAITLIST=3001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5000" >> $GITHUB_ENV
-            echo "API_URL=https://aqwaya.com/api/v1" >> $GITHUB_ENV
+            echo "API_URL=https://aqwaya.com" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-staging" >> $GITHUB_ENV
             echo "BRANCH=staging" >> $GITHUB_ENV
             echo "PORT_WAITLIST=3501" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3500" >> $GITHUB_ENV
             echo "PORT_BACKEND=5001" >> $GITHUB_ENV
-            echo "API_URL=https://staging.aqwaya.com/api/v1" >> $GITHUB_ENV
+            echo "API_URL=https://staging.aqwaya.com" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-dev" >> $GITHUB_ENV
             echo "BRANCH=dev" >> $GITHUB_ENV
             echo "PORT_WAITLIST=4001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=4000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5002" >> $GITHUB_ENV
-            echo "API_URL=https://dev.aqwaya.com/api/v1" >> $GITHUB_ENV
+            echo "API_URL=https://dev.aqwaya.com" >> $GITHUB_ENV
           fi
 
       - name: Deploy via SSH
