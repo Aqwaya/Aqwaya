@@ -1,62 +1,34 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
-  const { name, email, subject, message } = await req.json();
-
-  if (!email || !message || !name) {
-    return NextResponse.json(
-      { success: false, message: "Name, Email, and Message are required" },
-      { status: 400 }
-    );
-  }
-
   try {
-    const apiKey = process.env.BREVO_API_KEY as string;
-    await fetch("https://api.brevo.com/v3/contacts", {
+    const body = await req.json();
+
+    // Forward the request to your NestJS Backend v1 API
+    const response = await fetch("http://localhost:3001/api/v1/contact", {
       method: "POST",
       headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        "api-key": apiKey,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        attributes: {
-          FULLNAME: name,
-          SUBJECT: subject,
-          MESSAGE: message,
-        },
-        listIds: [7],
-        updateEnabled: true,
-      }),
+      body: JSON.stringify(body),
     });
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
-    });
+    const data = await response.json();
 
-    await transporter.sendMail({
-      from: `"Aqwaya Contact" <${process.env.GMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Contact Message from ${name}`,
-      html: `
-        <h2>New Contact Message</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject || "N/A"}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `,
-    });
+    // If NestJS returns an error (400, 429, 500), pass it to the UI
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, message: data.message || "Failed to send message" },
+        { status: response.status }
+      );
+    }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: data.message });
   } catch (error) {
-    console.error("Server error:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    console.error("Frontend Proxy Error:", error);
+    return NextResponse.json(
+      { success: false, message: "Could not connect to the server." },
+      { status: 500 }
+    );
   }
 }
