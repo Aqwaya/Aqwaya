@@ -1,0 +1,13 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  basePath: '/app',
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+};
+
+console.log("🚀 NEXT_CONFIG: BasePath is set to /app");
+
+export default nextConfig;
