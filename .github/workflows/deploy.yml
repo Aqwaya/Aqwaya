@@ -13,7 +13,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-script: |
+          script: |
             cd /home/ubuntu/aqwaya
             
             git fetch origin
