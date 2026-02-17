@@ -1,12 +1,27 @@
-name: Deploy Production
+name: Multi-Environment Deployment
+
 on:
   push:
-    branches: [ main ]
+    branches: [ main, staging, dev ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set Deployment Variables
+        id: vars
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "DEPLOY_PATH=/home/ubuntu/aqwaya" >> $GITHUB_ENV
+            echo "BRANCH=main" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            echo "DEPLOY_PATH=/home/ubuntu/aqwaya-staging" >> $GITHUB_ENV
+            echo "BRANCH=staging" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_PATH=/home/ubuntu/aqwaya-dev" >> $GITHUB_ENV
+            echo "BRANCH=dev" >> $GITHUB_ENV
+          fi
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -14,27 +29,24 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/ubuntu/aqwaya
-            
+            cd ${{ env.DEPLOY_PATH }}
+
             git fetch origin
-            git reset --hard origin/main
-            
-            # 1. Backend (API)
+            git reset --hard origin/${{ env.BRANCH }}
+
             cd backend
             npm install --production
-            pm2 restart backend || pm2 start index.js --name backend
-            
-            # 2. Waitlist (Root Landing Page - Port 3001)
+            pm2 restart backend-${{ env.BRANCH }} || pm2 start index.js --name backend-${{ env.BRANCH }}
+
             cd ../waitlist
             npm install
             npm run build
-            pm2 restart waitlist || pm2 start npm --name waitlist -- start -- -p 3001
-            
-            # 3. Frontend (Dashboard - Port 3000)
+            pm2 restart waitlist-${{ env.BRANCH }} || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p 3001
+
             cd ../frontend
             npm install 
             export NEXT_FONT_GOOGLE_MOCKED=true
             npm run build 
-            pm2 restart frontend || pm2 start npm --name frontend -- start -- -p 3000
+            pm2 restart frontend-${{ env.BRANCH }} || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p 3000
             
             pm2 save
