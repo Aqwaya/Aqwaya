@@ -17,18 +17,21 @@ jobs:
             echo "PORT_WAITLIST=3001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5000" >> $GITHUB_ENV
+            echo "API_URL=https://aqwaya.com/api/v1" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-staging" >> $GITHUB_ENV
             echo "BRANCH=staging" >> $GITHUB_ENV
             echo "PORT_WAITLIST=3501" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3500" >> $GITHUB_ENV
             echo "PORT_BACKEND=5001" >> $GITHUB_ENV
+            echo "API_URL=https://staging.aqwaya.com/api/v1" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-dev" >> $GITHUB_ENV
             echo "BRANCH=dev" >> $GITHUB_ENV
             echo "PORT_WAITLIST=4001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=4000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5002" >> $GITHUB_ENV
+            echo "API_URL=https://dev.aqwaya.com/api/v1" >> $GITHUB_ENV
           fi
 
       - name: Deploy via SSH
@@ -37,6 +40,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          envs: BRANCH, DEPLOY_PATH, PORT_BACKEND, PORT_WAITLIST, PORT_FRONTEND, API_URL
           script: |
             cd ${{ env.DEPLOY_PATH }}
 
@@ -54,15 +58,26 @@ jobs:
             # 2. Waitlist (Landing Page - Next.js)
             cd ../waitlist
             npm install
-            npm run build
+            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build
             pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
             # 3. Frontend (Dashboard - Next.js)
             cd ../frontend
             npm install 
+            
+            # --- HYBRID ROUTING LOGIC ---
+            if [ "${{ env.BRANCH }}" == "main" ]; then
+              echo "Removing basePath for Production Subdomain..."
+              sed -i "s/basePath: '\/app',//g" next.config.mjs
+            else
+              echo "Ensuring basePath: '/app' is present for Staging/Dev..."
+              # In case it was deleted, this adds it back after the first open brace
+              grep -q "basePath" next.config.mjs || sed -i "/nextConfig = {/a \  basePath: '/app'," next.config.mjs
+            fi
+            
             export NEXT_FONT_GOOGLE_MOCKED=true
-            npm run build 
+            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build 
             pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
-            # Save PM2 state to survive server reboots
+            # Save PM2 state
             pm2 save
