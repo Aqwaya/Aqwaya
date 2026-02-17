@@ -49,8 +49,7 @@ jobs:
             npm install
             npx prisma generate
             npm run build
-            # We point PM2 to dist/main.js and use --update-env to catch port changes
-            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start dist/main.js --name backend-${{ env.BRANCH }}
+            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }}
 
             # 2. Waitlist (Landing Page - Next.js)
             cd ../waitlist

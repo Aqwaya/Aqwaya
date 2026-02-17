@@ -41,7 +41,7 @@ async function bootstrap() {
   // 6. GLOBAL PREFIX
   app.setGlobalPrefix('api');
 
-  // 7. SWAGGER DOCUMENTATION
+// 7. SWAGGER DOCUMENTATION
   const config = new DocumentBuilder()
     .setTitle('Aqwaya API')
     .setDescription('Enterprise API documentation for Aqwaya Waitlist and Core Services')
@@ -50,7 +50,11 @@ async function bootstrap() {
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  
+  // FIXED LINE BELOW:
+  SwaggerModule.setup('api/docs', app, document, {
+    useGlobalPrefix: true, // This is the magic flag
+  });
 
   const PORT = process.env.PORT || 5000;
   await app.listen(PORT);
