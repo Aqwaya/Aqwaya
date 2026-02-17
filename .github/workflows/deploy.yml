@@ -40,26 +40,30 @@ jobs:
           script: |
             cd ${{ env.DEPLOY_PATH }}
 
+            # Sync code
             git fetch origin
             git reset --hard origin/${{ env.BRANCH }}
 
-            # 1. Backend (API)
+            # 1. Backend (NestJS API)
             cd backend
-            npm install --production
-            # We pass the port as an environment variable to the Node app
-            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start index.js --name backend-${{ env.BRANCH }}
+            npm install
+            npx prisma generate
+            npm run build
+            # We point PM2 to dist/main.js and use --update-env to catch port changes
+            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start dist/main.js --name backend-${{ env.BRANCH }}
 
-            # 2. Waitlist (Landing Page)
+            # 2. Waitlist (Landing Page - Next.js)
             cd ../waitlist
             npm install
             npm run build
-            pm2 restart waitlist-${{ env.BRANCH }} || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
+            pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
-            # 3. Frontend (Dashboard)
+            # 3. Frontend (Dashboard - Next.js)
             cd ../frontend
             npm install 
             export NEXT_FONT_GOOGLE_MOCKED=true
             npm run build 
-            pm2 restart frontend-${{ env.BRANCH }} || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
+            pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
+            # Save PM2 state to survive server reboots
             pm2 save
