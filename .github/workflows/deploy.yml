@@ -43,41 +43,34 @@ jobs:
           envs: BRANCH, DEPLOY_PATH, PORT_BACKEND, PORT_WAITLIST, PORT_FRONTEND, API_URL
           script: |
             cd ${{ env.DEPLOY_PATH }}
-
-            # Sync code
             git fetch origin
             git reset --hard origin/${{ env.BRANCH }}
 
-            # 1. Backend (NestJS API)
             cd backend
             npm install
             npx prisma generate
             npm run build
-            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }}
+            pm2 delete backend-${{ env.BRANCH }} || true
+            PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }}
 
-            # 2. Waitlist (Landing Page - Next.js)
             cd ../waitlist
             npm install
             NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build
             pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
-            # 3. Frontend (Dashboard - Next.js)
             cd ../frontend
             npm install 
             
-            # --- HYBRID ROUTING LOGIC ---
             if [ "${{ env.BRANCH }}" == "main" ]; then
-              echo "Removing basePath for Production Subdomain..."
-              sed -i "s/basePath: '\/app',//g" next.config.mjs
+              sed -i "/basePath:/d" next.config.mjs
+              sed -i "/trailingSlash:/d" next.config.mjs
             else
-              echo "Ensuring basePath: '/app' is present for Staging/Dev..."
-              # In case it was deleted, this adds it back after the first open brace
               grep -q "basePath" next.config.mjs || sed -i "/nextConfig = {/a \  basePath: '/app'," next.config.mjs
+              grep -q "trailingSlash" next.config.mjs || sed -i "/nextConfig = {/a \  trailingSlash: true," next.config.mjs
             fi
             
             export NEXT_FONT_GOOGLE_MOCKED=true
             NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build 
             pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
-            # Save PM2 state
             pm2 save
