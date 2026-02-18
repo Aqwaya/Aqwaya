@@ -13,7 +13,7 @@ export default function HomePage() {
         {/* Logo */}
         <div className="mb-6">
           <Image
-            src="../public/logo.png"
+            src="/logo.png"
             alt="Aqwaya Logo"
             width={80}
             height={80}

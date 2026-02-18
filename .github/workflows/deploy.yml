@@ -65,8 +65,8 @@ jobs:
               sed -i "/basePath:/d" next.config.mjs
               sed -i "/trailingSlash:/d" next.config.mjs
             else
-              grep -q "basePath" next.config.mjs || sed -i "/nextConfig = {/a \  basePath: '/app'," next.config.mjs
-              grep -q "trailingSlash" next.config.mjs || sed -i "/nextConfig = {/a \  trailingSlash: true," next.config.mjs
+              grep -q "basePath" next.config.mjs || sed -i "/const nextConfig = {/a \  basePath: '/app'," next.config.mjs
+              grep -q "trailingSlash" next.config.mjs || sed -i "/const nextConfig = {/a \  trailingSlash: true," next.config.mjs
             fi
             
             export NEXT_FONT_GOOGLE_MOCKED=true
