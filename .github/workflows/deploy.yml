@@ -17,18 +17,21 @@ jobs:
             echo "PORT_WAITLIST=3001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5000" >> $GITHUB_ENV
+            echo "API_URL=https://aqwaya.com" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-staging" >> $GITHUB_ENV
             echo "BRANCH=staging" >> $GITHUB_ENV
             echo "PORT_WAITLIST=3501" >> $GITHUB_ENV
             echo "PORT_FRONTEND=3500" >> $GITHUB_ENV
             echo "PORT_BACKEND=5001" >> $GITHUB_ENV
+            echo "API_URL=https://staging.aqwaya.com" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-dev" >> $GITHUB_ENV
             echo "BRANCH=dev" >> $GITHUB_ENV
             echo "PORT_WAITLIST=4001" >> $GITHUB_ENV
             echo "PORT_FRONTEND=4000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5002" >> $GITHUB_ENV
+            echo "API_URL=https://dev.aqwaya.com" >> $GITHUB_ENV
           fi
 
       - name: Deploy via SSH
@@ -37,29 +40,32 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          envs: BRANCH, DEPLOY_PATH, PORT_BACKEND, PORT_WAITLIST, PORT_FRONTEND, API_URL
           script: |
             cd ${{ env.DEPLOY_PATH }}
-
             git fetch origin
             git reset --hard origin/${{ env.BRANCH }}
 
-            # 1. Backend (API)
             cd backend
-            npm install --production
-            # We pass the port as an environment variable to the Node app
-            PORT=${{ env.PORT_BACKEND }} pm2 restart backend-${{ env.BRANCH }} --update-env || PORT=${{ env.PORT_BACKEND }} pm2 start index.js --name backend-${{ env.BRANCH }}
+            npm install
+            npx prisma generate
+            npm run build
+            pm2 delete backend-${{ env.BRANCH }} || true
+            PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }}
 
-            # 2. Waitlist (Landing Page)
             cd ../waitlist
             npm install
-            npm run build
-            pm2 restart waitlist-${{ env.BRANCH }} || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
+            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build
+            pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
-            # 3. Frontend (Dashboard)
             cd ../frontend
             npm install 
+            # REMOVE basePath and trailingSlash from all environments
+            sed -i "/basePath:/d" next.config.mjs
+            sed -i "/trailingSlash:/d" next.config.mjs
+            
             export NEXT_FONT_GOOGLE_MOCKED=true
-            npm run build 
-            pm2 restart frontend-${{ env.BRANCH }} || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
+            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build 
+            pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
             pm2 save
