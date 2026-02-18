@@ -62,10 +62,8 @@ jobs:
             cd ../frontend
             npm install 
             
-            if [ "${{ env.BRANCH }}" == "main" ]; then
-              sed -i "/basePath:/d" next.config.mjs
-            fi
-            
+            # REMOVE basePath for ALL environments to simplify
+            sed -i "/basePath:/d" next.config.mjs
             sed -i "/trailingSlash:/d" next.config.mjs
             
             export NEXT_FONT_GOOGLE_MOCKED=true
