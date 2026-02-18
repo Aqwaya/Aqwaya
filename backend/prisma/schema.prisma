@@ -25,12 +25,19 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
   firstName String?
   lastName  String?
+  role      Role     @default(USER) // Set default to USER
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
