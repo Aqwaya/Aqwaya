@@ -60,14 +60,9 @@ jobs:
 
             cd ../frontend
             npm install 
-            
-            if [ "${{ env.BRANCH }}" == "main" ]; then
-              sed -i "/basePath:/d" next.config.mjs
-              sed -i "/trailingSlash:/d" next.config.mjs
-            else
-              grep -q "basePath" next.config.mjs || sed -i "/const nextConfig = {/a \  basePath: '/app'," next.config.mjs
-              grep -q "trailingSlash" next.config.mjs || sed -i "/const nextConfig = {/a \  trailingSlash: true," next.config.mjs
-            fi
+            # REMOVE basePath and trailingSlash from all environments
+            sed -i "/basePath:/d" next.config.mjs
+            sed -i "/trailingSlash:/d" next.config.mjs
             
             export NEXT_FONT_GOOGLE_MOCKED=true
             NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build 
