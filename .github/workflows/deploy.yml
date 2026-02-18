@@ -60,8 +60,11 @@ jobs:
 
             cd ../frontend
             npm install 
-            # REMOVE basePath and trailingSlash from all environments
-            sed -i "/basePath:/d" next.config.mjs
+            
+            if [ "${{ env.BRANCH }}" == "main" ]; then
+              sed -i "/basePath:/d" next.config.mjs
+            fi
+            
             sed -i "/trailingSlash:/d" next.config.mjs
             
             export NEXT_FONT_GOOGLE_MOCKED=true
