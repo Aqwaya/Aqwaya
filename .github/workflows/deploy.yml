@@ -63,10 +63,14 @@ jobs:
             npm install 
             
             sed -i "/basePath:/d" next.config.mjs
-            sed -i "/trailingSlash:/d" next.config.mjs
+            if [ "${{ env.BRANCH }}" != "main" ]; then
+              sed -i "s/const nextConfig = {/const nextConfig = { basePath: '\/app',/" next.config.mjs
+            fi
             
             export NEXT_FONT_GOOGLE_MOCKED=true
             export NEXT_PUBLIC_API_URL=${{ env.API_URL }}
+            
+            rm -rf .next
             npm run build 
             
             pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
