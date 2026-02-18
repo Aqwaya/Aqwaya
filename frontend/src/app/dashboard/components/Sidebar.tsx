@@ -80,7 +80,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
       <div className="md:hidden fixed top-0 left-0 w-full flex items-center justify-between px-4 py-3 bg-white shadow-sm z-50">
         <div className="flex items-center space-x-2">
           <Image
-            src="/logo.png"
+            src="../public/logo.png"
             alt="Aqwaya Logo"
             width={30}
             height={30}
@@ -121,7 +121,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
           <div className="p-3 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center space-x-1">
               <Image
-                src="/logo.png"
+                src="../public/logo.png"
                 alt="Aqwaya Logo"
                 width={30}
                 height={30}

@@ -17,7 +17,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center text-black">
             <Image
-              src="/logo.png"
+              src="../public/logo.png"
               alt="Aqwaya Logo"
               width={30}
               height={30}

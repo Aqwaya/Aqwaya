@@ -70,7 +70,7 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md shadow-lg border-0 bg-white">
         <CardHeader className="flex flex-col items-center">
-          <Image src="/logo.png" alt="Logo" width={60} height={60} />
+          <Image src="../public/logo.png" alt="Logo" width={60} height={60} />
           <CardTitle className="mt-4 text-2xl font-bold text-gray-900">
             Welcome to Aqwaya
           </CardTitle>
