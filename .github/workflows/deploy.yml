@@ -62,7 +62,6 @@ jobs:
             cd ../frontend
             npm install 
             
-            # REMOVE basePath for ALL environments to simplify
             sed -i "/basePath:/d" next.config.mjs
             sed -i "/trailingSlash:/d" next.config.mjs
             
