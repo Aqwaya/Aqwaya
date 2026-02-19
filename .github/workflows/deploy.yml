@@ -56,7 +56,7 @@ jobs:
             npx prisma generate
             npx prisma db push
             npm run build
-            pm2 delete backend-${{ env.BRANCH }} || true
+            pm2 delete backend-${{ env.BRANCH }} 2>/dev/null || true
             PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }} --update-env
 
             cd ../waitlist
@@ -65,8 +65,9 @@ jobs:
             echo "NEXT_PUBLIC_API_BASE_URL=${{ env.API_URL }}" >> .env.production
             rm -rf .next
             npm run build
-            pm2 delete waitlist-${{ env.BRANCH }} || true
-            pm2 delete waitlist || true
+            chmod -R 755 .next
+            pm2 delete waitlist-${{ env.BRANCH }} 2>/dev/null || true
+            pm2 delete waitlist 2>/dev/null || true
             pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
             cd ../frontend
@@ -76,8 +77,9 @@ jobs:
             export NEXT_FONT_GOOGLE_MOCKED=true
             rm -rf .next
             npm run build 
-            pm2 delete frontend-${{ env.BRANCH }} || true
-            pm2 delete frontend || true
+            chmod -R 755 .next
+            pm2 delete frontend-${{ env.BRANCH }} 2>/dev/null || true
+            pm2 delete frontend 2>/dev/null || true
             pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
             pm2 save
