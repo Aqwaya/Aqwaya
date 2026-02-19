@@ -10,26 +10,29 @@ async function bootstrap() {
   
   const app = await NestFactory.create(AppModule);
 
-  // 1. SECURITY
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "unsafe-none" }
+  }));
 
-  // 2. PERFORMANCE
   app.use(compression());
 
-  // 3. CORS
+  const origins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',') 
+    : ['http://localhost:3000'];
+
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: origins,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
   });
 
-  // 4. API VERSIONING
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
 
-  // 5. GLOBAL VALIDATION
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,               
@@ -38,10 +41,8 @@ async function bootstrap() {
     }),
   );
 
-  // 6. GLOBAL PREFIX
   app.setGlobalPrefix('api');
 
-  // 7. SWAGGER DOCUMENTATION
   const config = new DocumentBuilder()
     .setTitle('Aqwaya API')
     .setDescription('Enterprise API documentation for Aqwaya Waitlist and Core Services')
@@ -51,8 +52,6 @@ async function bootstrap() {
   
   const document = SwaggerModule.createDocument(app, config);
 
-  // CHANGE 'api/docs' TO JUST 'docs'
-  // NestJS will automatically prepend the global 'api' prefix
   SwaggerModule.setup('docs', app, document, {
     useGlobalPrefix: true, 
   });
@@ -61,7 +60,6 @@ async function bootstrap() {
   await app.listen(PORT);
   
   logger.log(`🚀 Aqwaya Backend is running on: http://localhost:${PORT}/api/v1`);
-  logger.log(`📚 API Documentation available at: http://localhost:${PORT}/api/docs`);
 }
 
 bootstrap();

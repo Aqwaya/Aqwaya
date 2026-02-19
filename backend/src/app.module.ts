@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ContactModule } from './contact/contact.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { ContactModule } from './contact/contact.module';
     }]),
     WaitlistModule, 
     PrismaModule, 
-    ContactModule
+    ContactModule, UsersModule, AuthModule
   ],
   controllers: [AppController],
   providers: [

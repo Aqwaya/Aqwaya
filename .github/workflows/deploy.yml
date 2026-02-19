@@ -18,6 +18,7 @@ jobs:
             echo "PORT_FRONTEND=3000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5000" >> $GITHUB_ENV
             echo "API_URL=https://aqwaya.com" >> $GITHUB_ENV
+            echo "ALLOWED_ORIGINS=https://aqwaya.com,https://app.aqwaya.com" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-staging" >> $GITHUB_ENV
             echo "BRANCH=staging" >> $GITHUB_ENV
@@ -25,6 +26,7 @@ jobs:
             echo "PORT_FRONTEND=3500" >> $GITHUB_ENV
             echo "PORT_BACKEND=5001" >> $GITHUB_ENV
             echo "API_URL=https://staging.aqwaya.com" >> $GITHUB_ENV
+            echo "ALLOWED_ORIGINS=https://staging.aqwaya.com,https://app-staging.aqwaya.com" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/home/ubuntu/aqwaya-dev" >> $GITHUB_ENV
             echo "BRANCH=dev" >> $GITHUB_ENV
@@ -32,6 +34,7 @@ jobs:
             echo "PORT_FRONTEND=4000" >> $GITHUB_ENV
             echo "PORT_BACKEND=5002" >> $GITHUB_ENV
             echo "API_URL=https://dev.aqwaya.com" >> $GITHUB_ENV
+            echo "ALLOWED_ORIGINS=https://dev.aqwaya.com,https://app-dev.aqwaya.com,http://localhost:3000" >> $GITHUB_ENV
           fi
 
       - name: Deploy via SSH
@@ -40,7 +43,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: BRANCH, DEPLOY_PATH, PORT_BACKEND, PORT_WAITLIST, PORT_FRONTEND, API_URL
+          envs: BRANCH, DEPLOY_PATH, PORT_BACKEND, PORT_WAITLIST, PORT_FRONTEND, API_URL, ALLOWED_ORIGINS
           script: |
             cd ${{ env.DEPLOY_PATH }}
             git fetch origin
@@ -48,24 +51,27 @@ jobs:
 
             cd backend
             npm install
+            sed -i "/ALLOWED_ORIGINS=/d" .env || true
+            echo "ALLOWED_ORIGINS=${{ env.ALLOWED_ORIGINS }}" >> .env
             npx prisma generate
             npm run build
             pm2 delete backend-${{ env.BRANCH }} || true
-            PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }}
+            PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }} --update-env
 
             cd ../waitlist
             npm install
-            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build
+            export NEXT_PUBLIC_API_URL=${{ env.API_URL }}
+            export NEXT_PUBLIC_API_BASE_URL=${{ env.API_URL }}
+            npm run build
             pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
             cd ../frontend
             npm install 
-            # REMOVE basePath and trailingSlash from all environments
-            sed -i "/basePath:/d" next.config.mjs
-            sed -i "/trailingSlash:/d" next.config.mjs
-            
             export NEXT_FONT_GOOGLE_MOCKED=true
-            NEXT_PUBLIC_API_URL=${{ env.API_URL }} npm run build 
+            export NEXT_PUBLIC_API_URL=${{ env.API_URL }}
+            export NEXT_PUBLIC_API_BASE_URL=${{ env.API_URL }}
+            rm -rf .next
+            npm run build 
             pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
             pm2 save

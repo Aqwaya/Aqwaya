@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { registerUser } from "@/app/api/auth";
+import { registerUser, loginUser } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function SignUpPage() {
   const [firstName, setFirstName] = useState("");
@@ -26,35 +27,24 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
 
-    const username = `${firstName} ${lastName}`.trim();
-
     try {
-      const data = await registerUser(username, email, password);
-      localStorage.setItem("token", data.token);
-       localStorage.setItem("user", JSON.stringify(data.user));
+      await registerUser(firstName, lastName, email, password);
+      const loginData = await loginUser(email, password);
+      
+      localStorage.setItem("token", loginData.token);
+      localStorage.setItem("user", JSON.stringify(loginData.user));
 
-      // redirect after success
-      router.push("/onboarding");
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else if (
-        typeof err === "object" &&
-        err !== null &&
-        "message" in err &&
-        typeof (err as { message?: string }).message === "string"
-      ) {
-        setError((err as { message: string }).message);
-      } else {
-        setError("Registration failed");
-      }
+      router.push("/dashboard");
+    } catch (err: any) {
+      const msg = err?.message || "Registration failed";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg border-0 bg-white">
         <CardHeader className="flex flex-col items-center">
           <Image src="/logo.png" alt="Logo" width={60} height={60} />
@@ -71,10 +61,9 @@ export default function SignUpPage() {
             >
               Sign In
             </Link>
-
             <Link
               href="/auth/register"
-              className="flex-1 px-4 py-2 bg-white text-gray-500 font-medium text-center rounded-md"
+              className="flex-1 px-4 py-2 bg-white text-gray-900 font-medium text-center rounded-md shadow-sm"
             >
               Sign Up
             </Link>
@@ -82,15 +71,12 @@ export default function SignUpPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName" className="text-gray-700">
-                  First Name
-                </Label>
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="firstName"
-                    type="text"
                     placeholder="John"
                     className="pl-10"
                     value={firstName}
@@ -99,16 +85,12 @@ export default function SignUpPage() {
                   />
                 </div>
               </div>
-
-              <div>
-                <Label htmlFor="lastName" className="text-gray-700">
-                  Last Name
-                </Label>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="lastName"
-                    type="text"
                     placeholder="Doe"
                     className="pl-10"
                     value={lastName}
@@ -119,12 +101,10 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="email" className="text-gray-700">
-                Email
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
@@ -137,12 +117,10 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="password" className="text-gray-700">
-                Password
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="password"
                   type="password"
@@ -156,17 +134,15 @@ export default function SignUpPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 text-center">{error}</p>
+              <p className="text-sm text-red-600 text-center font-medium">{error}</p>
             )}
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full text-white py-3 font-semibold 
-              bg-gradient-to-r from-blue-600 to-purple-600 
-              hover:opacity-90 transition"
+              className="w-full text-white py-6 font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition shadow-md"
             >
-              {loading ? "Creating..." : "Create Account"}
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
         </CardContent>
