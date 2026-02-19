@@ -10,7 +10,11 @@ async function bootstrap() {
   
   const app = await NestFactory.create(AppModule);
 
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "unsafe-none" }
+  }));
+
   app.use(compression());
 
   const origins = process.env.ALLOWED_ORIGINS 
@@ -21,7 +25,7 @@ async function bootstrap() {
     origin: origins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
   });
 
   app.enableVersioning({
@@ -56,7 +60,6 @@ async function bootstrap() {
   await app.listen(PORT);
   
   logger.log(`🚀 Aqwaya Backend is running on: http://localhost:${PORT}/api/v1`);
-  logger.log(`📚 API Documentation available at: http://localhost:${PORT}/api/docs`);
 }
 
 bootstrap();
