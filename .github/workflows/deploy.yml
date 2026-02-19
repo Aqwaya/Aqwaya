@@ -54,6 +54,7 @@ jobs:
             sed -i "/ALLOWED_ORIGINS=/d" .env || true
             echo "ALLOWED_ORIGINS=${{ env.ALLOWED_ORIGINS }}" >> .env
             npx prisma generate
+            npx prisma db push
             npm run build
             pm2 delete backend-${{ env.BRANCH }} || true
             PORT=${{ env.PORT_BACKEND }} pm2 start dist/src/main.js --name backend-${{ env.BRANCH }} --update-env
@@ -62,8 +63,11 @@ jobs:
             npm install
             echo "NEXT_PUBLIC_API_URL=${{ env.API_URL }}" > .env.production
             echo "NEXT_PUBLIC_API_BASE_URL=${{ env.API_URL }}" >> .env.production
+            rm -rf .next
             npm run build
-            pm2 restart waitlist-${{ env.BRANCH }} --update-env || pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
+            pm2 delete waitlist-${{ env.BRANCH }} || true
+            pm2 delete waitlist || true
+            pm2 start npm --name waitlist-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_WAITLIST }}
 
             cd ../frontend
             npm install 
@@ -72,6 +76,8 @@ jobs:
             export NEXT_FONT_GOOGLE_MOCKED=true
             rm -rf .next
             npm run build 
-            pm2 restart frontend-${{ env.BRANCH }} --update-env || pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
+            pm2 delete frontend-${{ env.BRANCH }} || true
+            pm2 delete frontend || true
+            pm2 start npm --name frontend-${{ env.BRANCH }} -- start -- -p ${{ env.PORT_FRONTEND }}
             
             pm2 save
