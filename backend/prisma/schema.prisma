@@ -31,13 +31,29 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  firstName String?
-  lastName  String?
-  role      Role     @default(USER) // Set default to USER
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  role          Role     @default(USER)
+  isActive      Boolean  @default(true)
+  isOnboarded   Boolean  @default(false)
+  profile       Profile?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Profile {
+  id           String   @id @default(uuid())
+  businessName String
+  industry     String
+  website      String?
+  location     String?
+  description  String?
+  employees    String?
+  brandColor   String   @default("#3B82F6")
+  logoUrl      String?
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
 }

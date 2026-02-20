@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ContactModule } from './contact/contact.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ProfilesModule } from './profiles/profiles.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { AuthModule } from './auth/auth.module';
     }]),
     WaitlistModule, 
     PrismaModule, 
-    ContactModule, UsersModule, AuthModule
+    ContactModule, UsersModule, AuthModule, ProfilesModule, DashboardModule
   ],
   controllers: [AppController],
   providers: [

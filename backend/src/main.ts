@@ -2,18 +2,24 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import helmet from 'helmet';
 import compression from 'compression';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     crossOriginOpenerPolicy: { policy: "unsafe-none" }
   }));
+
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   app.use(compression());
 
@@ -45,9 +51,10 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Aqwaya API')
-    .setDescription('Enterprise API documentation for Aqwaya Waitlist and Core Services')
+    .setDescription('Enterprise API documentation for Aqwaya')
     .setVersion('1.0')
-    .addTag('waitlist')
+    .addTag('Documentation')
+    .addBearerAuth()
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
