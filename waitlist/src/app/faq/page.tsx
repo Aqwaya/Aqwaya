@@ -142,7 +142,7 @@ export default function FAQPage() {
           <Button>
             <a
               href="mailto:hello@aqwaya.com"
-              className="inline-block bg-[#2C2E66] text-white px-6 py-2 rounded-md font-medium hover:bg-[rgb(44,46,200)] transition"
+              className="inline-block bg-[#2C2E66] text-white px-6 py-2 rounded-md font-medium hover:bg-[#75006d] transition"
             >
               Contact Us
             </a>
