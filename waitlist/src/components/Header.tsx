@@ -17,7 +17,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Image
-              src="/logo.png"
+              src="/logo.jpg"
               alt="Aqwaya Logo"
               width={30}
               height={30}
@@ -35,31 +35,37 @@ export default function Header() {
                 </Link>
               </Button>
             )}
+
             <Button className="bg-white hover:bg-gray-200 py-1 px-4">
               <Link href="/about" className="text-black font-semibold">
                 About us
               </Link>
             </Button>
+
             <Button className="bg-white hover:bg-gray-200 py-1 px-4">
               <Link href="/contact" className="text-black font-semibold">
                 Contact
               </Link>
             </Button>
+
             <Button className="bg-white hover:bg-gray-200 py-1 px-4">
               <Link href="/faq" className="text-black font-semibold">
                 FAQ
               </Link>
             </Button>
-            <Button
-              className="bg-white hover:bg-gray-200 py-1 px-4"
-              onClick={() =>
-                document
-                  .getElementById("features")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              <span className="text-black font-semibold">Features</span>
-            </Button>
+
+            {pathname === "/" && (
+              <Button
+                className="bg-white hover:bg-gray-200 py-1 px-4"
+                onClick={() =>
+                  document
+                    .getElementById("features")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span className="text-black font-semibold">Features</span>
+              </Button>
+            )}
 
             <Button
               className="text-white bg-[#003591] hover:bg-[#75006d] px-8 py-4 rounded-xl"
@@ -73,50 +79,83 @@ export default function Header() {
             </Button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
-            {isOpen ? (
-              <button onClick={() => setIsOpen(false)}>
-                <X className="w-6 h-6 text-gray-800" />
-              </button>
-            ) : (
-              <div className="flex items-center justify-center space-x-2">
-                <Button
-                  className="text-white font-semibold bg-[#2C2E66] hover:bg-[rgb(44,46,200)]"
-                  onClick={() =>
-                    document
-                      .getElementById("waitlist-form")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  Join Waitlist
-                </Button>
-                <button onClick={() => setIsOpen(true)}>
-                  <Menu className="w-6 h-6 text-gray-800" />
-                </button>
-              </div>
-            )}
+          {/* Mobile Toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            <Button
+              className="text-white bg-[#003591] hover:bg-[#75006d] px-6 py-4 rounded-xl"
+              onClick={() =>
+                document
+                  .getElementById("waitlist-form")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Get Started
+            </Button>
+
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="relative w-6 h-6 flex items-center justify-center"
+            >
+              <Menu
+                className={`absolute w-6 h-6 text-gray-800 transition-all duration-300 ${
+                  isOpen
+                    ? "opacity-0 rotate-90 scale-75"
+                    : "opacity-100 rotate-0 scale-100"
+                }`}
+              />
+
+              <X
+                className={`absolute w-6 h-6 text-gray-800 transition-all duration-300 ${
+                  isOpen
+                    ? "opacity-100 rotate-0 scale-100"
+                    : "opacity-0 -rotate-90 scale-75"
+                }`}
+              />
+            </button>
           </div>
         </div>
 
-        {/* Mobile Nav Links */}
-        {isOpen && (
-          <div className="md:hidden flex flex-col space-y-2 pb-4">
-            <Link href="/" className="text-black font-bold block">
+        {/* Mobile Menu */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="flex flex-col space-y-3">
+            <Link
+              href="/"
+              className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block "
+            >
               Home
             </Link>
-            <Link href="/about" className="text-black font-bold block">
+
+            <Link
+              href="/about"
+              className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block"
+            >
               About us
             </Link>
-            <Link href="/contact" className="text-black font-bold block">
+
+            <Link href="/contact" className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block">
               Contact
             </Link>
-            <Link href="/faq" className="text-black font-bold block">
+
+            <Link href="/faq" className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block">
               FAQ
             </Link>
-            <Link href="/features" className="text-black font-bold block">
-              Features
-            </Link>
+
+            {pathname === "/" && (
+              <button
+                className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold text-left"
+                onClick={() =>
+                  document
+                    .getElementById("features")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Features
+              </button>
+            )}
 
             <button
               className="text-white bg-[#003591] hover:bg-[#75006d] px-8 py-4 rounded-xl"
@@ -130,7 +169,7 @@ export default function Header() {
               Get Started
             </button>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

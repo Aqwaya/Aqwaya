@@ -7,7 +7,7 @@ import { Zap, Heart, Award, Users } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-linear-to-r from-blue-100 to-red-100">
       {/* Header */}
       <Header />
       <section className="max-w-4xl mx-auto pt-15 pb-20 px-4 sm:px-6 lg:px-8">

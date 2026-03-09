@@ -189,14 +189,14 @@ export default function Landing() {
   const [phone, setPhone] = useState("");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-linear-to-r from-blue-100 to-red-100">
       {/* Header */}
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-15 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-blue-100 to-red-100">
+      <section className="py-15 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
               <div className="flex items-center space-x-1 px-4 py-2 rounded-full bg-purple-100 border border-purple-200">
                 <Rocket className="w-4 h-4 text-purple-600" />
@@ -221,7 +221,7 @@ export default function Landing() {
 
             <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-gray-600">
               Turn Interest Into Paying Customers With Just A Prompt. No
-              marketing or technical skills required just describe your business
+              marketing or technical skills required. Just describe your business
               and let our AI do the rest.
             </p>
             <Button
@@ -255,7 +255,7 @@ export default function Landing() {
       </section>
 
       {/* Platform Preview */}
-      <section className="px-4 sm:px-6 lg:px-8 bg-linear-to-r from-blue-100 to-red-100">
+      <section className="py-15 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900">
@@ -298,10 +298,7 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section
-        id="feature"
-        className="py-20 bg-linear-to-r from-blue-100 to-red-100"
-      >
+      <section id="features" className="py-15 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900">
@@ -337,7 +334,7 @@ export default function Landing() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-linear-to-r from-blue-100 to-red-100">
+      <section className="py-15 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -396,7 +393,7 @@ export default function Landing() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-linear-to-r from-blue-100 to-red-100">
+      <section className="py-15 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900">
@@ -442,13 +439,13 @@ export default function Landing() {
       </section>
 
       {/* Waitlist Form */}
-      <section className="py-20 bg-linear-to-r from-blue-100 to-red-100">
+      <section id="waitlist-form" className="py-15 bg-linear-to-r from-blue-100 to-red-100">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4 text-gray-900">
             Ready to see Aqwaya in Action?
           </h2>
         </div>
-        <div id="waitlist-form" className="max-w-md mx-auto mb-12">
+        <div className="max-w-md mx-auto mb-12">
           <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-center flex items-center justify-center space-x-2">
@@ -553,7 +550,7 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-linear-to-r from-blue-100 to-red-100">
+      <section className="py-15 bg-linear-to-r from-blue-100 to-red-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center space-x-2 mb-6">
             <Lightbulb className="w-8 h-8 text-yellow-500" />

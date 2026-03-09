@@ -93,7 +93,7 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-linear-to-r from-blue-100 to-red-100">
       <Header />
       <div className="max-w-3xl mx-auto pt-15 pb-20 px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl md:text-5xl font-bold text-center flex items-center justify-center space-x-2 mb-4 text-gray-900">
