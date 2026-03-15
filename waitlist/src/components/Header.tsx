@@ -122,31 +122,34 @@ export default function Header() {
           }`}
         >
           <div className="flex flex-col space-y-3">
-            <Link
-              href="/"
-              className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block "
-            >
+            <Link href="/" className="text-black font-bold block ">
               Home
             </Link>
 
             <Link
               href="/about"
-              className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block"
+              className="text-black font-bold block"
             >
               About us
             </Link>
 
-            <Link href="/contact" className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block">
+            <Link
+              href="/contact"
+              className="text-black font-bold block"
+            >
               Contact
             </Link>
 
-            <Link href="/faq" className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold block">
+            <Link
+              href="/faq"
+              className="text-black font-bold block"
+            >
               FAQ
             </Link>
 
             {pathname === "/" && (
               <button
-                className="bg-white hover:bg-gray-200 py-1 px-4 text-black font-bold text-left"
+                className="text-black font-bold text-left"
                 onClick={() =>
                   document
                     .getElementById("features")
