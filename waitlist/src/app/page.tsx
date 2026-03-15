@@ -131,16 +131,16 @@ export default function Landing() {
       answer:
         "Aqwaya is an AI-powered marketing automation platform that helps businesses create, launch, and optimize marketing campaigns without technical expertise. Our AI generates landing pages, email sequences, and marketing copy tailored to your business needs.",
     },
-     {
+    {
       question: "What makes Aqwaya different from other marketing tools?",
       answer:
         "Unlike traditional marketing platforms that require extensive setup and expertise, Aqwaya uses advanced AI to do the heavy lifting. You simply describe your business goals, and our AI creates complete marketing funnels, writes compelling copy, and optimizes for conversions automatically.",
     },
-     {
+    {
       question: "Do I need technical skills to use Aqwaya?",
       answer:
         "Not at all! Aqwaya is designed for business owners, marketers, and entrepreneurs without technical backgrounds. Our AI handles all the complex technical aspects, allowing you to focus on growing your business.",
-    }, 
+    },
     {
       question: "What type of businesses can benefit from Aqwaya?",
       answer:
@@ -375,7 +375,10 @@ export default function Landing() {
         </div>
       </section>
       {/* About */}
-      <section className="max-w-4xl mx-auto pt-15 pb-20 px-4 sm:px-6 lg:px-8">
+      <section
+        id="about"
+        className="max-w-4xl mx-auto pt-15 pb-20 px-4 sm:px-6 lg:px-8"
+      >
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-gray-900">
             About Aqwaya
@@ -435,7 +438,10 @@ export default function Landing() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-15 bg-linear-to-r from-blue-100 to-red-100">
+      <section
+        id="faq"
+        className="py-15 bg-linear-to-r from-blue-100 to-red-100"
+      >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900">

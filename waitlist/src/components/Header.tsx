@@ -36,11 +36,18 @@ export default function Header() {
               </Button>
             )}
 
-            <Button className="bg-white hover:bg-gray-200 py-1 px-4">
-              <Link href="/about" className="text-black font-semibold">
-                About us
-              </Link>
-            </Button>
+             {pathname === "/" && (
+              <Button
+                className="bg-white hover:bg-gray-200 py-1 px-4"
+                onClick={() =>
+                  document
+                    .getElementById("about")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span className="text-black font-semibold">About us</span>
+              </Button>
+            )}
 
             <Button className="bg-white hover:bg-gray-200 py-1 px-4">
               <Link href="/contact" className="text-black font-semibold">
@@ -48,11 +55,18 @@ export default function Header() {
               </Link>
             </Button>
 
-            <Button className="bg-white hover:bg-gray-200 py-1 px-4">
-              <Link href="/faq" className="text-black font-semibold">
-                FAQ
-              </Link>
-            </Button>
+             {pathname === "/" && (
+              <Button
+                className="bg-white hover:bg-gray-200 py-1 px-4"
+                onClick={() =>
+                  document
+                    .getElementById("faq")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span className="text-black font-semibold">FAQ</span>
+              </Button>
+            )}
 
             {pathname === "/" && (
               <Button
@@ -126,12 +140,18 @@ export default function Header() {
               Home
             </Link>
 
-            <Link
-              href="/about"
-              className="text-black font-bold block"
-            >
-              About us
-            </Link>
+            {pathname === "/" && (
+              <button
+                className="text-black font-bold text-left"
+                onClick={() =>
+                  document
+                    .getElementById("about")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                About us
+              </button>
+            )}
 
             <Link
               href="/contact"
@@ -140,12 +160,18 @@ export default function Header() {
               Contact
             </Link>
 
-            <Link
-              href="/faq"
-              className="text-black font-bold block"
-            >
-              FAQ
-            </Link>
+            {pathname === "/" && (
+              <button
+                className="text-black font-bold text-left"
+                onClick={() =>
+                  document
+                    .getElementById("faq")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                FAQ
+              </button>
+            )}
 
             {pathname === "/" && (
               <button
