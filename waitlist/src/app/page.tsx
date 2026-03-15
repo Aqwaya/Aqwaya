@@ -18,6 +18,7 @@ import {
   MailPlus,
   Sparkles,
   Bot,
+  Zap,
   Shield,
   TrendingUp,
   Contact,
@@ -130,21 +131,16 @@ export default function Landing() {
       answer:
         "Aqwaya is an AI-powered marketing automation platform that helps businesses create, launch, and optimize marketing campaigns without technical expertise. Our AI generates landing pages, email sequences, and marketing copy tailored to your business needs.",
     },
-    {
-      question: "When will Aqwaya be available?",
-      answer:
-        "We're currently in the development stage and testing. Beta access will be available to waitlist members in March 2026, with full launch following shortly after. Join our waitlist to be among the first to experience the platform.",
-    },
-    {
+     {
       question: "What makes Aqwaya different from other marketing tools?",
       answer:
         "Unlike traditional marketing platforms that require extensive setup and expertise, Aqwaya uses advanced AI to do the heavy lifting. You simply describe your business goals, and our AI creates complete marketing funnels, writes compelling copy, and optimizes for conversions automatically.",
     },
-    {
+     {
       question: "Do I need technical skills to use Aqwaya?",
       answer:
         "Not at all! Aqwaya is designed for business owners, marketers, and entrepreneurs without technical backgrounds. Our AI handles all the complex technical aspects, allowing you to focus on growing your business.",
-    },
+    }, 
     {
       question: "What type of businesses can benefit from Aqwaya?",
       answer:
@@ -221,8 +217,8 @@ export default function Landing() {
 
             <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-gray-600">
               Turn Interest Into Paying Customers With Just A Prompt. No
-              marketing or technical skills required. Just describe your business
-              and let our AI do the rest.
+              marketing or technical skills required. Just describe your
+              business and let our AI do the rest.
             </p>
             <Button
               className="text-white bg-[#003591] hover:bg-[#75006d] px-8 py-4 rounded-xl mb-4"
@@ -234,22 +230,6 @@ export default function Landing() {
             >
               Get Early Access
             </Button>
-
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 mt-4">
-              <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-yellow-500" />
-                <span>Beta users report 300% increase in conversions</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-blue-500" />
-                <span>$50K+ in sales generated during testing</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Award className="w-5 h-5 text-purple-500" />
-                <span>Featured in TechCrunch</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -298,7 +278,10 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-15 bg-linear-to-r from-blue-100 to-red-100">
+      <section
+        id="features"
+        className="py-15 bg-linear-to-r from-blue-100 to-red-100"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900">
@@ -391,6 +374,65 @@ export default function Landing() {
           </div>
         </div>
       </section>
+      {/* About */}
+      <section className="max-w-4xl mx-auto pt-15 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold mb-4 text-gray-900">
+            About Aqwaya
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            We&apos;re on a mission to democratize marketing automation and make
+            AI-powered growth accessible to every business, regardless of size
+            or technical expertise.
+          </p>
+        </div>
+
+        {/* Our Mission */}
+        <Card className="mb-10 bg-white/90 backdrop-blur-sm shadow-lg border-0">
+          <CardHeader className="flex-row items-center space-x-4">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <CardTitle className="text-2xl text-gray-900">
+              Our Mission
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-2 text-gray-700 text-lg">
+            At Aqwaya, we believe that every business deserves access to
+            world-class marketing automation, regardless of their budget or
+            technical knowledge. We&apos;re building the future where AI handles
+            the complex technical aspects of marketing, allowing entrepreneurs
+            and businesses to focus on what they do best - serving their
+            customers and growing their businesses.
+          </CardContent>
+        </Card>
+
+        {/* Our Team */}
+        <Card className="bg-white/90 backdrop-blur-sm shadow-lg border-0">
+          <CardHeader className="flex-row items-center space-x-4">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-orange-500">
+              <Users className="w-6 h-6 text-orange-100" />
+            </div>
+            <CardTitle className="text-2xl text-gray-900">Our Team</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-2 text-gray-700 text-lg space-y-4">
+            <p>
+              We&apos;re a passionate team of entrepreneurs, engineers,
+              designers, and marketers who have experienced both the challenges
+              and the triumphs of building businesses from the ground up.
+            </p>
+            <p>
+              By combining technical ability, user experience, and business
+              development, we come together to create a platform that truly
+              understands what businesses need to succeed.
+            </p>
+            <p className="italic text-center text-gray-600 border-t border-gray-200 p-4 bg-gray-50">
+              &quot;We&apos;re not just building a tool - we&apos;re building
+              the future of business growth.&quot;
+            </p>
+          </CardContent>
+        </Card>
+      </section>
 
       {/* FAQ Section */}
       <section className="py-15 bg-linear-to-r from-blue-100 to-red-100">
@@ -439,7 +481,10 @@ export default function Landing() {
       </section>
 
       {/* Waitlist Form */}
-      <section id="waitlist-form" className="py-15 bg-linear-to-r from-blue-100 to-red-100">
+      <section
+        id="waitlist-form"
+        className="py-15 bg-linear-to-r from-blue-100 to-red-100"
+      >
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4 text-gray-900">
             Ready to see Aqwaya in Action?
