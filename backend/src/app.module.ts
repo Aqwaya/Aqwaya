@@ -10,6 +10,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { CampaignModule } from './campaign/campaign.module';
+import { ChatModule } from './chat/chat.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -20,7 +23,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     }]),
     WaitlistModule, 
     PrismaModule, 
-    ContactModule, UsersModule, AuthModule, ProfilesModule, DashboardModule
+    ContactModule, UsersModule, AuthModule, ProfilesModule, DashboardModule, CampaignModule, ChatModule, AiModule
   ],
   controllers: [AppController],
   providers: [
