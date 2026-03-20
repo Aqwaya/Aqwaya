@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Mail } from "lucide-react";
+import { Link, Mail } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 
@@ -42,15 +42,21 @@ export default function Footer() {
 
           <div>
             <h4 className="font-semibold mb-4">Company</h4>
+
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a
-                  href="/about"
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("about")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                   className="hover:text-gray-50 transition-colors"
                 >
                   About
-                </a>
+                </button>
               </li>
+
               <li>
                 <a
                   href="/contact"
@@ -59,10 +65,18 @@ export default function Footer() {
                   Contact
                 </a>
               </li>
+
               <li>
-                <a href="/faq" className="hover:text-gray-50 transition-colors">
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("faq")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="hover:text-gray-50 transition-colors"
+                >
                   FAQ
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -83,7 +97,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500">
-          <p>&copy; 2025 Aqwaya. All rights reserved.</p>
+          <p>&copy; 2026 Aqwaya. All rights reserved.</p>
         </div>
       </div>
     </footer>

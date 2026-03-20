@@ -34,8 +34,7 @@ export class WaitlistService {
         },
       });
 
-      // 4. PARALLEL EXECUTION: Fire Brevo and Emails concurrently
-      // Promise.allSettled ensures one failure doesn't kill the entire process
+      // 4. PARALLEL EXECUTION: Fire Brevo and Admin Email concurrently
       const results = await Promise.allSettled([
         // Task A: Brevo Sync
         fetch('https://api.brevo.com/v3/contacts', {
@@ -57,24 +56,16 @@ export class WaitlistService {
           }),
         }),
 
-        // Task B: Admin Notification Email
+        // Task B: Admin Notification Email (ONLY)
         transporter.sendMail({
           from: `"Aqwaya System" <${process.env.GMAIL_USER}>`,
           to: process.env.ADMIN_EMAIL,
           subject: '🚀 New Waitlist Signup - Aqwaya',
           html: this.getAdminEmailHtml(dto),
         }),
-
-        // Task C: Subscriber Confirmation Email
-        transporter.sendMail({
-          from: `"Aqwaya" <${process.env.GMAIL_USER}>`,
-          to: dto.email,
-          subject: "You're on the list! Welcome to Aqwaya",
-          html: this.getSubscriberEmailHtml(dto.firstName),
-        }),
       ]);
 
-      // 5. POST-LOGGING: Log failures for internal tracking without blocking response
+      // 5. POST-LOGGING
       results.forEach((res, i) => {
         if (res.status === 'rejected') {
           console.error(`External Service Error (Task ${i}):`, res.reason);
@@ -90,7 +81,6 @@ export class WaitlistService {
     } catch (error: any) {
       console.error('Waitlist Process Error:', error);
       
-      // Secondary safety check for database race conditions
       if (error.code === 'P2002') {
         throw new ConflictException('This email is already on the waitlist.');
       }
@@ -99,7 +89,7 @@ export class WaitlistService {
     }
   }
 
-  // --- Helper Methods for Clean HTML Templates ---
+  // --- Helper Methods ---
 
   private getAdminEmailHtml(dto: JoinWaitlistDto): string {
     return `
@@ -109,17 +99,6 @@ export class WaitlistService {
         <p><strong>Email:</strong> ${dto.email}</p>
         <p><strong>Phone:</strong> ${dto.phone || 'N/A'}</p>
         <p style="color: #888; font-size: 12px; margin-top: 20px;">Source: Production AWS RDS</p>
-      </div>`;
-  }
-
-  private getSubscriberEmailHtml(firstName: string): string {
-    return `
-      <div style="font-family: sans-serif; max-width: 600px; margin: auto; line-height: 1.6; color: #333;">
-        <h2 style="color: #1a73e8;">Hello ${firstName},</h2>
-        <p>Thanks for joining the <strong>Aqwaya</strong> waitlist! We're thrilled to have you with us.</p>
-        <p>We'll notify you the moment we launch our services. Stay tuned!</p>
-        <br />
-        <p>Best regards,<br /><strong>The Aqwaya Team</strong></p>
       </div>`;
   }
 }
