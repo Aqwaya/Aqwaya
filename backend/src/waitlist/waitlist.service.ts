@@ -54,7 +54,7 @@ export class WaitlistService {
               attributes: {
                 FIRSTNAME: dto.firstName,
                 LASTNAME: dto.lastName,
-                PHONE: dto.phone,
+                SMS: dto.phone,
               },
               listIds: [5],
               updateEnabled: true,
