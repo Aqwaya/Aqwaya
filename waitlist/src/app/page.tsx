@@ -82,7 +82,7 @@ export default function Landing() {
       icon: Bot,
       title: "AI-Powered Campaign Creation",
       description:
-        "Generate complete marketing funnels in minutes with our intelligent AI assistant.",
+        "Create and execute sales strategies in minutes with our intelligent AI engine.",
     },
     {
       icon: PanelTop,
@@ -221,7 +221,7 @@ export default function Landing() {
               business and let our AI do the rest.
             </p>
             <Button
-              className="text-white bg-[#003591] hover:bg-[#75006d] px-8 py-4 rounded-xl mb-4"
+              className="text-white bg-[#003591] hover:bg-[#75006d] px-12 py-8 rounded-xl mb-4 text-lg"
               onClick={() =>
                 document
                   .getElementById("waitlist-form")
@@ -253,9 +253,6 @@ export default function Landing() {
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-4 text-sm text-gray-500">
-                  dashboard.aqwaya.com
-                </span>
               </div>
 
               <div className="relative w-full aspect-[16/10] sm:h-[512px] rounded-xl overflow-hidden">
