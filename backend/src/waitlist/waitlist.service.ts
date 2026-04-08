@@ -9,6 +9,25 @@ export class WaitlistService {
 
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Formats phone numbers to international standard for Brevo (E.164).
+   * Prevents the 'Invalid phone number' 400 error seen in production logs.
+   */
+  private formatPhoneNumber(phone?: string): string {
+    if (!phone) return '';
+    
+    // Remove all non-numeric characters except a potential leading '+'
+    const cleaned = phone.replace(/(?!^\+)\D/g, '');
+    
+    // Handle Nigerian local format: 080... -> +23480...
+    if (cleaned.startsWith('0') && cleaned.length === 11) {
+      return `+234${cleaned.substring(1)}`;
+    }
+    
+    // Ensure it starts with '+'
+    return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
+  }
+
   async join(dto: JoinWaitlistDto) {
     this.logger.log(`Incoming waitlist request: ${dto.email}`);
 
@@ -38,9 +57,11 @@ export class WaitlistService {
       });
 
       const results = await Promise.allSettled([
-        // Task A: Brevo Sync with detailed response logging
+        // Task A: Brevo Sync
         (async () => {
           this.logger.log(`Attempting Brevo sync for ${dto.email}...`);
+          
+          const formattedPhone = this.formatPhoneNumber(dto.phone);
           
           const response = await fetch('https://api.brevo.com/v3/contacts', {
             method: 'POST',
@@ -54,7 +75,7 @@ export class WaitlistService {
               attributes: {
                 FIRSTNAME: dto.firstName,
                 LASTNAME: dto.lastName,
-                SMS: dto.phone,
+                SMS: formattedPhone, // Fix: Must be E.164 format (e.g., +234...)
               },
               listIds: [5],
               updateEnabled: true,
