@@ -47,9 +47,9 @@ const capitalizeFullName = (name: string): string => {
 export function DashboardSidebar(props: ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
 
-  const fullName = `${user?.firstName} ${user?.lastName}`;
+  const fullName = user ? `${user.firstName} ${user.lastName}` : '';
 
   const router = useRouter();
 
@@ -60,7 +60,7 @@ export function DashboardSidebar(props: ComponentProps<typeof Sidebar>) {
     router.replace('/auth/login');
   }
 
-  const firstLetter = fullName.charAt(0).toUpperCase();
+  const firstLetter = fullName.charAt(0).toUpperCase() || 'U';
 
   const handleClose = () => {
     if (isMobile) setOpenMobile(false);
@@ -149,13 +149,19 @@ export function DashboardSidebar(props: ComponentProps<typeof Sidebar>) {
                 <button className='w-full flex items-center justify-between p-3 rounded-lg bg-linear-to-r from-blue-50 to-purple-50 border border-blue-100 hover:border-purple-200 transition-all duration-200'>
                   <div className='flex items-center space-x-3'>
                     <div className='w-8 h-8 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shrink-0'>
-                      <span className='text-white text-sm font-semibold'>
-                        {firstLetter}
-                      </span>
+                      {isLoading ? (
+                        <div className='h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white' />
+                      ) : (
+                        <span className='text-white text-sm font-semibold'>
+                          {firstLetter}
+                        </span>
+                      )}
                     </div>
                     <div className='flex-1 min-w-0 text-left'>
                       <p className='text-sm font-medium text-gray-800 truncate'>
-                        {capitalizeFullName(fullName)}
+                        {isLoading
+                          ? 'Loading...'
+                          : capitalizeFullName(fullName)}
                       </p>
                       <p className='text-xs text-purple-600 truncate flex items-center'>
                         <Sparkles className='w-3 h-3 mr-1' />

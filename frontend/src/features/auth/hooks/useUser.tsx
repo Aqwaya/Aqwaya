@@ -14,12 +14,25 @@ interface User {
 export function useUser() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) setUser(JSON.parse(stored));
-    else router.replace('/auth/login');
-  }, []);
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem('user');
+        router.replace('/auth/login');
+        return;
+      }
 
-  return { user, setUser };
+      setIsLoading(false);
+      return;
+    }
+
+    router.replace('/auth/login');
+  }, [router]);
+
+  return { user, setUser, isLoading };
 }

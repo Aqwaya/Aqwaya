@@ -1,32 +1,28 @@
 'use client';
 
-import { useEffect, useState, ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession } from '@/lib/auth';
 
-interface AuthGuardProps {
-  children: ReactNode;
-}
-
-export default function AuthGuard({ children }: AuthGuardProps) {
-  const [loading, setLoading] = useState(true);
+export default function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const token = true;
-    // const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
 
-    if (!token) {
-      router.push('/auth/login'); // redirect if not logged in
-    } else {
-      setLoading(false); // token exists, show page
+    if (!token || !user) {
+      router.replace('/auth/login');
+      return;
     }
+
+    setIsChecking(false);
   }, [router]);
 
-  if (loading) {
+  if (isChecking) {
     return (
-      <div className='flex items-center justify-center min-h-screen'>
-        <div className='animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600'></div>
+      <div className='flex min-h-screen items-center justify-center'>
+        <div className='h-16 w-16 animate-spin rounded-full border-b-4 border-blue-600' />
       </div>
     );
   }
