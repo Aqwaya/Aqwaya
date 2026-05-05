@@ -9,8 +9,9 @@ import { Mail, Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { loginUser } from '@/app/api/auth';
+
 import axios from 'axios';
+import { loginUser } from '@/features/auth/services';
 
 // Helper to check if user is logged in
 const isLoggedIn = () => !!localStorage.getItem('token');
@@ -38,7 +39,7 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const data = await loginUser(email, password);
+      const data = await loginUser({ email, password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       router.push('/dashboard');

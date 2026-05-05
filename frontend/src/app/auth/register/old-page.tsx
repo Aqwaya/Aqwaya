@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Mail, Lock, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { registerUser, loginUser } from '@/app/api/auth';
+// import { registerUser, loginUser } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { loginUser, registerUser } from '@/features/auth/services';
 
 export default function SignUpPage() {
   const [firstName, setFirstName] = useState('');
@@ -28,8 +29,8 @@ export default function SignUpPage() {
     setError(null);
 
     try {
-      await registerUser(firstName, lastName, email, password);
-      const loginData = await loginUser(email, password);
+      await registerUser({ firstName, lastName, email, password });
+      const loginData = await loginUser({ email, password });
 
       localStorage.setItem('token', loginData.token);
       localStorage.setItem('user', JSON.stringify(loginData.user));
