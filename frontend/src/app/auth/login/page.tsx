@@ -1,24 +1,36 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Image from 'next/image';
-import Link from 'next/link';
 
-import { LoginForm } from '../../../features/auth/components/LoginForm';
 import { Logo } from '@/components/Logo';
-import { AuthTabs } from '../../../features/auth/components/AuthTabs';
-import { SocialLogin } from '@/features/auth/components/SocialLogin';
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { AuthTabs } from '../../../features/auth/components/AuthTabs';
+import { LoginForm } from '../../../features/auth/components/LoginForm';
 
 export default function page() {
   const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    if (user && token) router.push('/dashboard');
+
+    if (user && token) {
+      router.replace('/dashboard');
+      return;
+    }
+
+    setIsCheckingAuth(false);
   }, [router]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className='flex h-dvh items-center justify-center'>
+        <div className='h-16 w-16 animate-spin rounded-full border-b-4 border-blue-600' />
+      </div>
+    );
+  }
 
   return (
     <div className='h-dvh flex items-center justify-center bg-gray-50 p-2'>

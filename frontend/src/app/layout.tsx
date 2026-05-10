@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: 'Aqwaya',
-  description: 'AI Powered Marketing App',
+  description: 'AI-Powered conversion engine',
 };
 
 export default function RootLayout({
