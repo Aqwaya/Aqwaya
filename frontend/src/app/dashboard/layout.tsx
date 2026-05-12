@@ -7,6 +7,8 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import AuthGuard from '@/components/authguard';
+import { DashboardBreadcrumb } from '@/components/DashboardBreadcrumb';
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -16,13 +18,16 @@ export default async function DashboardLayout({
     <AuthGuard>
       <SidebarProvider>
         <DashboardSidebar />
-        <SidebarInset>
+
+        <SidebarInset className='h-svh overflow-hidden'>
           <header className='flex bg-background z-50 py-3 md:py-5 top-0 w-full sticky shrink-0 items-center gap-2 border-b pr-4'>
             <SidebarTrigger />
-            <h2>Dashboard</h2>
+            <DashboardBreadcrumb />
           </header>
 
-          <main className='p-4 bg-gray-50 h-full w-full'>{children}</main>
+          <main className='bg-gray-50 min-h-0 flex-1 w-full overflow-hidden'>
+            {children}
+          </main>
         </SidebarInset>
       </SidebarProvider>
     </AuthGuard>
