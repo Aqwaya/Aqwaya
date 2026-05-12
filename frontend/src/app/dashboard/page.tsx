@@ -6,7 +6,7 @@ import { DashboardStats } from '@/features/dashboard/components/DashboardStats';
 
 export default function page() {
   return (
-    <div className='space-y-6 p-4'>
+    <div className='h-full min-h-0 space-y-6 overflow-y-auto p-4'>
       <DashboardHeader />
       <DashboardStats />
       <AICampaignBuilder />
