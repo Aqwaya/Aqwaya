@@ -25,7 +25,7 @@ export function DashboardHeader() {
         asChild
       >
         <Link
-          href='/dashboard/ai-campaign-builder'
+          href='/ai-campaign-builder'
           className='flex items-center justify-center'
         >
           <Zap className='w-4 h-4 mr-2' />

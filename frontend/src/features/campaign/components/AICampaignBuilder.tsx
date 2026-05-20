@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export function AICampaignBuilder() {
   return (
-    <Link href='/dashboard/ai-campaign-builder' className='block'>
+    <Link href='/ai-campaign-builder' className='block'>
       <Card className='bg-linear-to-r from-blue-50 to-purple-50 border-2 border-blue-200 transition-all duration-200 hover:border-primary/60 hover:shadow-md'>
         <CardHeader className='text-center pb-4'>
           <div className='mx-auto w-16 h-16 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4'>

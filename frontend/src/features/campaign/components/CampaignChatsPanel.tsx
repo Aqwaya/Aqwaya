@@ -1,17 +1,22 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+'use client';
+
+import { Logo } from '@/components/Logo';
 import {
-  BadgePercent,
-  Dot,
-  EllipsisVertical,
-  Funnel,
-  HandPlatter,
-  Pin,
-  Plus,
-  PlusIcon,
-  Search,
-  Stars,
-} from 'lucide-react';
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
+import { ArrowLeft, Filter, PenBoxIcon, Pin, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
 import { CampaignChat } from './CampaignChat';
 import type { CampaignChat as CampaignChatType } from '../types';
 
@@ -19,8 +24,9 @@ const todaysChat: CampaignChatType[] = [
   {
     id: '20205166',
     title: 'Black Friday Promo',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
+    pinned: true,
   },
   {
     id: '20205167',
@@ -31,12 +37,18 @@ const todaysChat: CampaignChatType[] = [
   {
     id: '20205168',
     title: 'Product Launch Campaign',
-    status: 'draft',
+    status: 'in-progress',
     time: '7:35 PM',
+    pinned: true,
   },
 ];
 const yesterdayChat: CampaignChatType[] = [
-  { id: '20205169', title: 'E-commerce Cart', status: 'draft', time: 'MON' },
+  {
+    id: '20205169',
+    title: 'E-commerce Cart',
+    status: 'in-progress',
+    time: 'MON',
+  },
   {
     id: '20205161',
     title: 'Facebook Ads Campaign',
@@ -48,133 +60,153 @@ const thisWeeksChat: CampaignChatType[] = [
   {
     id: '20205160',
     title: 'Email Marketing',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
   },
   {
     id: '2020510',
     title: 'Email Marketing',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
   },
   {
     id: '2205160',
     title: 'Email Marketing',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
   },
   {
     id: '2020g160',
     title: 'Email Marketing',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
   },
   {
     id: '2020y160',
     title: 'Email Marketing',
-    status: 'draft',
+    status: 'in-progress',
     time: '9:37 AM',
   },
 ];
 
 export function CampaignChatsPanel() {
+  const chats = [...todaysChat, ...yesterdayChat, ...thisWeeksChat];
+  const pinnedChats = chats.filter((chat) => chat.pinned);
+  const recentChats = chats.filter((chat) => !chat.pinned);
+
   return (
-    <div className='bg-[#F2F6FF] p-4 h-full overflow-y-auto'>
-      {/* Header */}
-      <div className='flex items-center gap-3 justify-between'>
-        <div className='flex gap-2'>
-          <Stars />
-          <h2 className='text-sm font-bold'>Campaign Chats</h2>
-        </div>
-
-        <Button variant='ghost' size='icon'>
-          <Plus className='size-5' />
-        </Button>
-      </div>
-
-      {/* filter & search */}
-      <div className='flex items-center gap-10 justify-between mt-4'>
-        <div className='relative flex-1'>
-          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-
-          <Input
-            type='text'
-            placeholder='Search chats...'
-            className='pl-10 border-foreground'
-          />
-        </div>
-
-        <Button variant='ghost' size='icon'>
-          <Funnel className='size-4' />
-        </Button>
-      </div>
-
-      {/* chats */}
-      <>
-        {/* Pinned */}
-        <div className='mt-6 space-y-1'>
-          <h3 className='text-sm '>Pinned</h3>
-          <div className='bg-[#934DC521] flex justify-between items-center gap-3 text-xs pt-2 px-2 rounded-md'>
-            <div className='flex gap-2 items-center'>
-              <HandPlatter className='size-5' />
-
-              <div>
-                <h2 className='line-clamp-1 font-medium'>
-                  Real Estate Email Campaign
-                </h2>
-                <div className='flex gap-1 items-center'>
-                  <span className='text-foreground/80'>Draft</span>
-                  <Dot />
-                  <span className='text-foreground/80'>Just now</span>
-                </div>
-              </div>
+    <Sidebar
+      collapsible='icon'
+      className='border-r border-border bg-background'
+    >
+      <SidebarHeader className='border-b border-border/70 bg-background p-0'>
+        <div className='flex items-center border-b justify-between gap-2 group-data-[collapsible=icon]:justify-center'>
+          <div className='flex min-w-0 items-center group-data-[collapsible=icon]:hidden'>
+            <Logo className='shrink-0' />
+            <div className='min-w-0'>
+              <p className='truncate text-sm font-bold leading-tight text-foreground'>
+                Aqwaya.ai
+              </p>
+              <p className='truncate text-xs text-muted-foreground'>
+                Campaign Builder
+              </p>
             </div>
-
-            <Button variant='ghost' size='icon' className='p-0'>
-              <Pin className='size-5' />
-            </Button>
           </div>
+          <SidebarTrigger className='hidden shrink-0 text-foreground hover:bg-muted hover:text-foreground md:flex' />
         </div>
 
-        {/* Today */}
-        <div className='mt-6 space-y-1'>
-          <h3 className='text-sm '>Today</h3>
-          <div className='space-y-2'>
-            {todaysChat.map((chat) => (
-              <CampaignChat key={chat.id} {...chat} />
-            ))}
-          </div>
-        </div>
+        <SidebarMenu className='p-1'>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip='New chat'
+              className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+            >
+              <PenBoxIcon className='size-4' />
+              <span className='group-data-[collapsible=icon]:hidden'>
+                New chat
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip='Search chats'
+              className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+            >
+              <Search className='size-4' />
+              <span className='group-data-[collapsible=icon]:hidden'>
+                Search chats
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip='Filter'
+              className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+            >
+              <Filter className='size-4' />
+              <span className='group-data-[collapsible=icon]:hidden'>
+                Filter
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
 
-        {/* Yesterday */}
-        <div className='mt-6 space-y-1'>
-          <h3 className='text-sm '>Yesterday</h3>
-          <div className='space-y-2'>
-            {yesterdayChat.map((chat) => (
-              <CampaignChat key={chat.id} {...chat} />
-            ))}
-          </div>
-        </div>
+      <SidebarContent className='px-2 py-3 bg-background'>
+        <SidebarGroup className='p-0 group-data-[collapsible=icon]:hidden'>
+          {pinnedChats.length > 0 && (
+            <>
+              <SidebarGroupLabel className='gap-1.5 px-2 text-sm text-foreground'>
+                <Pin className='size-3.5' />
+                Pinned
+              </SidebarGroupLabel>
+              <SidebarGroupContent className='mb-4'>
+                <SidebarMenu className='gap-2'>
+                  {pinnedChats.map((chat) => (
+                    <SidebarMenuItem key={chat.id}>
+                      <CampaignChat {...chat} />
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </>
+          )}
 
-        {/* This week */}
-        <div className='mt-6 space-y-1'>
-          <h3 className='text-sm'>This Week</h3>
-          <div className='space-y-2'>
-            {thisWeeksChat.map((chat) => (
-              <CampaignChat key={chat.id} {...chat} />
-            ))}
-          </div>
-        </div>
-      </>
+          <SidebarGroupLabel className='px-2 text-sm text-foreground'>
+            Recents
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className='gap-2'>
+              {recentChats.map((chat) => (
+                <SidebarMenuItem key={chat.id}>
+                  <CampaignChat {...chat} />
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      {/* new campaign chat */}
+      <SidebarFooter className='border-t border-border/70 bg-background p-2'>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              tooltip='Back to dashboard'
+              className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+            >
+              <Link href='/dashboard'>
+                <ArrowLeft className='size-4' />
+                <span className='group-data-[collapsible=icon]:hidden'>
+                  Back to dashboard
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
 
-      <div className='flex justify-center items-center mt-4'>
-        <Button variant='ghost' className='text-[#9500FF] hover:text-[#9143c9]'>
-          <Plus />
-          <span>New Campaign Chat</span>
-        </Button>
-      </div>
-    </div>
+      <SidebarRail />
+    </Sidebar>
   );
 }

@@ -19,7 +19,7 @@ export const navLinks: NavLink[] = [
   },
   {
     label: 'AI Campaign Builder',
-    href: '/dashboard/ai-campaign-builder',
+    href: '/ai-campaign-builder',
     icon: Zap,
   },
   {
