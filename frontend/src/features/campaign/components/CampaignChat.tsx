@@ -76,14 +76,7 @@ export function CampaignChat({ title, status, pinned }: CampaignChat) {
             <Pencil className='size-4' />
             <span>Rename</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Download className='size-4' />
-            <span>Export</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Archive className='size-4' />
-            <span>Archive</span>
-          </DropdownMenuItem>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive'>
             <Trash2 className='size-4' />

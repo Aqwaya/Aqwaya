@@ -15,10 +15,17 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { ArrowLeft, Filter, PenBoxIcon, Pin, Plus, Search } from 'lucide-react';
+import { ArrowLeft, Filter, PenBoxIcon, Pin, Search } from 'lucide-react';
 import Link from 'next/link';
-import { CampaignChat } from './CampaignChat';
+import { useState } from 'react';
 import type { CampaignChat as CampaignChatType } from '../types';
+import { CampaignChat } from './CampaignChat';
+import {
+  CampaignChatsFilterDialog,
+  type CampaignChatStatusFilter,
+} from './CampaignChatsFilterDialog';
+import { CampaignSearchChatsDialog } from './CampaignSearchChatsDialog';
+import { cn } from '@/lib/utils';
 
 const todaysChat: CampaignChatType[] = [
   {
@@ -90,9 +97,23 @@ const thisWeeksChat: CampaignChatType[] = [
 ];
 
 export function CampaignChatsPanel() {
+  const [openSearchDialog, setOpenSearchDialog] = useState(false);
+  const [openFilterDialog, setOpenFilterDialog] = useState(false);
+  const [statusFilter, setStatusFilter] =
+    useState<CampaignChatStatusFilter>('all');
   const chats = [...todaysChat, ...yesterdayChat, ...thisWeeksChat];
-  const pinnedChats = chats.filter((chat) => chat.pinned);
-  const recentChats = chats.filter((chat) => !chat.pinned);
+  const visibleChats =
+    statusFilter === 'all'
+      ? chats
+      : chats.filter((chat) => chat.status === statusFilter);
+  const pinnedChats = visibleChats.filter((chat) => chat.pinned);
+  const recentChats = visibleChats.filter((chat) => !chat.pinned);
+  const isFilterActive = statusFilter !== 'all';
+
+  const handleOpenSearchDialog = () => setOpenSearchDialog(true);
+  const handleOpenFilterDialog = () => setOpenFilterDialog(true);
+  const filterIndicatorClassName =
+    statusFilter === 'completed' ? 'bg-green-600' : 'bg-blue-600';
 
   return (
     <Sidebar
@@ -118,19 +139,24 @@ export function CampaignChatsPanel() {
         <SidebarMenu className='p-1'>
           <SidebarMenuItem>
             <SidebarMenuButton
+              asChild
               tooltip='New chat'
               className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
             >
-              <PenBoxIcon className='size-4' />
-              <span className='group-data-[collapsible=icon]:hidden'>
-                New chat
-              </span>
+              <Link href='/ai-campaign-builder'>
+                <PenBoxIcon className='size-4' />
+                <span className='group-data-[collapsible=icon]:hidden'>
+                  New chat
+                </span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip='Search chats'
               className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+              onClick={handleOpenSearchDialog}
             >
               <Search className='size-4' />
               <span className='group-data-[collapsible=icon]:hidden'>
@@ -138,22 +164,50 @@ export function CampaignChatsPanel() {
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          <CampaignSearchChatsDialog
+            open={openSearchDialog}
+            onOpenChange={setOpenSearchDialog}
+            chats={chats}
+          />
+
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip='Filter'
               className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
+              onClick={handleOpenFilterDialog}
             >
-              <Filter className='size-4' />
+              <span className='relative'>
+                <Filter className='size-4' />
+                {isFilterActive && (
+                  <span
+                    className={cn(
+                      'absolute -right-1 -top-1 size-2 rounded-full',
+                      filterIndicatorClassName,
+                    )}
+                  />
+                )}
+              </span>
               <span className='group-data-[collapsible=icon]:hidden'>
                 Filter
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          <CampaignChatsFilterDialog
+            open={openFilterDialog}
+            onOpenChange={setOpenFilterDialog}
+            value={statusFilter}
+            onValueChange={setStatusFilter}
+            chats={chats}
+          />
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* chat */}
       <SidebarContent className='px-2 py-3 bg-background'>
         <SidebarGroup className='p-0 group-data-[collapsible=icon]:hidden'>
+          {/* Pinned Chats */}
           {pinnedChats.length > 0 && (
             <>
               <SidebarGroupLabel className='gap-1.5 px-2 text-sm text-foreground'>
@@ -172,8 +226,9 @@ export function CampaignChatsPanel() {
             </>
           )}
 
+          {/* Recent Chats */}
           <SidebarGroupLabel className='px-2 text-sm text-foreground'>
-            Recents
+            Recent
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className='gap-2'>

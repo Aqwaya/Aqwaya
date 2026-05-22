@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useState } from 'react';
 
 type Message = {
   id: number;
@@ -57,11 +58,27 @@ const messages: Message[] = [
 ];
 
 export function CampaignChatMessages() {
+  const [copiedMessageId, setCopiedMessageId] = useState<null | number>(null);
+
+  async function handleCopy(id: number, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedMessageId(id);
+
+      setTimeout(
+        () => setCopiedMessageId((curId) => (curId === id ? null : curId)),
+        1500,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <TooltipProvider>
       <div className='mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-4'>
         {messages.map((message) => {
           const isUser = message.sender === 'user';
+          const isCopied = copiedMessageId === message.id;
 
           return (
             <article
@@ -90,14 +107,23 @@ export function CampaignChatMessages() {
                         type='button'
                         variant='ghost'
                         size='icon-xs'
-                        className='mt-2 text-muted-foreground hover:bg-blue-50 hover:text-blue-700'
-                        aria-label='Copy response'
+                        className={`mt-2 text-muted-foreground hover:bg-muted`}
+                        aria-label={
+                          isCopied ? 'Response copied' : 'Copy response'
+                        }
+                        onClick={() =>
+                          !isCopied && handleCopy(message.id, message.text)
+                        }
                       >
-                        <Copy className='size-3.5' />
+                        {isCopied ? (
+                          <Check className='size-3.5' />
+                        ) : (
+                          <Copy className='size-3.5' />
+                        )}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side='bottom' sideOffset={6}>
-                      Copy response
+                      {isCopied ? 'Response copied' : 'Copy response'}
                     </TooltipContent>
                   </Tooltip>
                 )}
