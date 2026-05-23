@@ -1,31 +1,9 @@
 import React from 'react';
 
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import AuthGuard from '@/components/authguard';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { CampaignChatsPanel } from '@/features/campaign/components/CampaignChatsPanel';
-import {
-  Archive,
-  Download,
-  EllipsisVertical,
-  Pencil,
-  Plus,
-  PinOff,
-  Trash2,
-  PenBoxIcon,
-} from 'lucide-react';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { CampaignChatHeader } from '@/features/campaign/components/CampaignChatHeader';
+import { CampaignChatsPanel } from '@/features/campaign/components/CampaignChatsPanel';
 
 export default async function DashboardLayout({
   children,
@@ -42,8 +20,8 @@ export default async function DashboardLayout({
         <SidebarInset className='h-svh overflow-hidden'>
           <CampaignChatHeader />
 
-          <main className='bg-background min-h-0 flex-1 w-full overflow-hidden'>
-            {children}
+          <main className='bg-background min-h-0 flex-1 w-full overflow-hidden flex flex-col'>
+            <div className='min-h-0 flex-1 overflow-hidden'>{children}</div>
           </main>
         </SidebarInset>
       </SidebarProvider>

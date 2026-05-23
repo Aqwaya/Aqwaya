@@ -1,3 +1,15 @@
-export default function page({ params }: { params: { id: string } }) {
-  return <div>page {params.id}</div>;
+import { CampaignChatMessages } from '@/features/campaign/components/CampaignChatMessages';
+import { CampaignChatBox } from '@/features/campaign/components/CampaignChatBox';
+
+export default function page() {
+  return (
+    <section className='h-full min-h-0 overflow-hidden'>
+      <div className='flex h-full min-h-0 min-w-0 flex-col'>
+        <div className='min-h-0 flex-1 overflow-y-auto'>
+          <CampaignChatMessages />
+        </div>
+        <CampaignChatBox />
+      </div>
+    </section>
+  );
 }

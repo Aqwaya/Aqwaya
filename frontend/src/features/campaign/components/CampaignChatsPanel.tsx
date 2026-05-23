@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import { ArrowLeft, Filter, PenBoxIcon, Pin, Search } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import type { CampaignChat as CampaignChatType } from '../types';
 import { CampaignChat } from './CampaignChat';
@@ -105,6 +106,7 @@ const thisWeeksChat: CampaignChatType[] = [
 ];
 
 export function CampaignChatsPanel() {
+  const params = useParams<{ id?: string }>();
   const [openSearchDialog, setOpenSearchDialog] = useState(false);
   const [openFilterDialog, setOpenFilterDialog] = useState(false);
   const [statusFilter, setStatusFilter] =
@@ -117,6 +119,8 @@ export function CampaignChatsPanel() {
   const pinnedChats = visibleChats.filter((chat) => chat.pinned);
   const recentChats = visibleChats.filter((chat) => !chat.pinned);
   const isFilterActive = statusFilter !== 'all';
+  const activeChatId =
+    typeof params.id === 'string' ? decodeURIComponent(params.id) : undefined;
 
   const handleOpenSearchDialog = () => setOpenSearchDialog(true);
   const handleOpenFilterDialog = () => setOpenFilterDialog(true);
@@ -226,7 +230,10 @@ export function CampaignChatsPanel() {
                 <SidebarMenu className='gap-2'>
                   {pinnedChats.map((chat) => (
                     <SidebarMenuItem key={chat.id}>
-                      <CampaignChat {...chat} />
+                      <CampaignChat
+                        {...chat}
+                        isActive={chat.id === activeChatId}
+                      />
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>
@@ -242,7 +249,10 @@ export function CampaignChatsPanel() {
             <SidebarMenu className='gap-2'>
               {recentChats.map((chat) => (
                 <SidebarMenuItem key={chat.id}>
-                  <CampaignChat {...chat} />
+                  <CampaignChat
+                    {...chat}
+                    isActive={chat.id === activeChatId}
+                  />
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

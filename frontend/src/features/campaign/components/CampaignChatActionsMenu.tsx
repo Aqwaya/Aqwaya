@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ConfirmDelete';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  EllipsisVertical,
-  PenBoxIcon,
-  PinIcon,
-  PinOff,
-  Trash2,
-} from 'lucide-react';
+import { EllipsisVertical, Pen, PinIcon, PinOff, Trash2 } from 'lucide-react';
 import { CampaignRenameChatDialog } from './CampaignRenameChatDialog';
 
 export function CampaignChatActionsMenu({
@@ -34,16 +28,6 @@ export function CampaignChatActionsMenu({
 
   return (
     <div className='flex shrink-0 items-center gap-2'>
-      <Button
-        type='button'
-        variant='ghost'
-        size='icon-sm'
-        className='md:hidden'
-        aria-label='New chat'
-      >
-        <PenBoxIcon className='size-5' />
-      </Button>
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -66,7 +50,7 @@ export function CampaignChatActionsMenu({
             <span>{isPinned ? 'Unpin' : 'Pin'}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setOpenRenameDialog(true)}>
-            <PenBoxIcon className='size-4' />
+            <Pen className='size-4' />
             <span>Rename</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
