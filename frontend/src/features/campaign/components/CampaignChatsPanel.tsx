@@ -40,6 +40,7 @@ const todaysChat: CampaignChatType[] = [
     title: 'WhatsApp Funnel Design',
     status: 'completed',
     time: '9:37 AM',
+    pinned: false,
   },
   {
     id: '20205168',
@@ -55,12 +56,14 @@ const yesterdayChat: CampaignChatType[] = [
     title: 'E-commerce Cart',
     status: 'in-progress',
     time: 'MON',
+    pinned: false,
   },
   {
     id: '20205161',
     title: 'Facebook Ads Campaign',
     status: 'completed',
     time: 'MON',
+    pinned: false,
   },
 ];
 const thisWeeksChat: CampaignChatType[] = [
@@ -69,30 +72,35 @@ const thisWeeksChat: CampaignChatType[] = [
     title: 'Email Marketing',
     status: 'in-progress',
     time: '9:37 AM',
+    pinned: false,
   },
   {
     id: '2020510',
     title: 'Email Marketing',
     status: 'in-progress',
     time: '9:37 AM',
+    pinned: false,
   },
   {
     id: '2205160',
     title: 'Email Marketing',
     status: 'in-progress',
     time: '9:37 AM',
+    pinned: false,
   },
   {
     id: '2020g160',
     title: 'Email Marketing',
     status: 'in-progress',
     time: '9:37 AM',
+    pinned: false,
   },
   {
     id: '2020y160',
     title: 'Email Marketing',
     status: 'in-progress',
     time: '9:37 AM',
+    pinned: false,
   },
 ];
 

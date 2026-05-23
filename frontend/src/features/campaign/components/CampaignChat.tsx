@@ -18,9 +18,9 @@ import {
   Trash2,
 } from 'lucide-react';
 import type { CampaignChat } from '../types';
+import { CampaignChatActionsMenu } from './CampaignChatActionsMenu';
 
 export function CampaignChat({ title, status, pinned }: CampaignChat) {
-  const PinIcon = pinned ? PinOff : Pin;
   const isCompleted = status === 'completed';
   const StatusIcon = isCompleted ? CheckCircle2 : LoaderCircle;
   const statusLabel = isCompleted ? 'Completed' : 'In progress';
@@ -56,12 +56,18 @@ export function CampaignChat({ title, status, pinned }: CampaignChat) {
         </div>
       </div>
 
-      <DropdownMenu>
+      <CampaignChatActionsMenu
+        className='size-7 shrink-0 p-0 group-data-[collapsible=icon]:hidden'
+        isPinned={pinned}
+        title={title}
+      />
+
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant='ghost'
             size='icon'
-            className='size-7 shrink-0 p-0 group-data-[collapsible=icon]:hidden'
+            
           >
             <EllipsisVertical className='size-5' />
             <span className='sr-only'>Open chat actions</span>
@@ -83,7 +89,7 @@ export function CampaignChat({ title, status, pinned }: CampaignChat) {
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </div>
   );
 }
