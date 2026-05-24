@@ -47,9 +47,6 @@ export function CampaignRenameChatDialog({
       <DialogContent className='gap-5 sm:max-w-md'>
         <DialogHeader>
           <DialogTitle className='text-base'>Rename chat</DialogTitle>
-          <DialogDescription>
-            Update the title shown in your campaign chat history.
-          </DialogDescription>
         </DialogHeader>
 
         <form className='grid gap-5' onSubmit={handleSubmit}>
