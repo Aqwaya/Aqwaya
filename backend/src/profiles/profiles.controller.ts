@@ -1,13 +1,7 @@
+// src/profiles/profiles.controller.ts
 import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiConsumes, 
-  ApiBearerAuth, 
-  ApiCreatedResponse, 
-  ApiBadRequestResponse 
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth, ApiCreatedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -15,7 +9,7 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 
 @ApiTags('Profiles')
 @ApiBearerAuth('access-token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard) // 🔒 Protected by JWT, but deliberately omits OnboardingGuard
 @Controller({ path: 'profiles', version: '1' })
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}

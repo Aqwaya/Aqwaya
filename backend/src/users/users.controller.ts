@@ -1,10 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ForbiddenException } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Patch, 
+  Param, 
+  Delete, 
+  UseGuards, 
+  ForbiddenException,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common';
 import { 
   ApiTags, 
   ApiOperation, 
   ApiOkResponse, 
   ApiCreatedResponse, 
-  ApiUnauthorizedResponse, 
   ApiForbiddenResponse, 
   ApiBearerAuth 
 } from '@nestjs/swagger';
@@ -13,6 +24,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { OnboardingGuard } from '../auth/guards/onboarding.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '@prisma/client';
@@ -42,9 +54,10 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(OnboardingGuard) // 🔒 Guards standard resource routing paths
   @ApiOperation({ summary: 'Find a specific user by record ID' })
   @ApiOkResponse({ description: 'User object returned.' })
-  @ApiForbiddenResponse({ description: 'Access denied: You cannot view other users records.' })
+  @ApiForbiddenResponse({ description: 'Access denied: Complete onboarding profile first.' })
   async findOne(@Param('id') id: string, @GetUser() currentUser: any) {
     if (currentUser.role !== Role.ADMIN && currentUser.id !== id) {
       throw new ForbiddenException('You can only access your own profile');
@@ -53,8 +66,10 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(OnboardingGuard)
   @ApiOperation({ summary: 'Update personal or account metadata' })
   @ApiOkResponse({ description: 'User record updated successfully.' })
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async update(
     @Param('id') id: string, 
     @Body() updateUserDto: UpdateUserDto, 
@@ -68,8 +83,7 @@ export class UsersController {
 
   @Delete(':id')
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Purge a user account from the system' })
-  @ApiOkResponse({ description: 'User account permanently removed.' })
+  @ApiOperation({ summary: 'Purge user representation records entirely' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }

@@ -19,18 +19,23 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    return this.usersService.create({
+    // 🔒 The updated usersService.create returns a SanitizedUser (password already stripped)
+    const userWithoutPassword = await this.usersService.create({
       ...registerDto,
       password: hashedPassword,
     });
+
+    return userWithoutPassword;
   }
 
   async login(email: string, pass: string) {
-    const user = await this.usersService.findOneByEmail(email);
+    // 🔒 Use internal secure gateway method to fetch full record context with password hash
+    const user = await this.usersService.findInternalWithPassword(email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Secure verification layer
     const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
@@ -43,14 +48,12 @@ export class AuthService {
       isOnboarded: user.isOnboarded 
     };
 
+    // Strip password column cleanly before compiling the response payload to the client
     const { password, ...userWithoutPassword } = user;
 
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        ...userWithoutPassword,
-        isOnboarded: user.isOnboarded,
-      },
+      user: userWithoutPassword,
     };
   }
 }
