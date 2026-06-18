@@ -155,7 +155,7 @@ export function CampaignChatsPanel() {
               tooltip='New chat'
               className='h-10 justify-start text-foreground hover:bg-muted hover:text-foreground group-data-[collapsible=icon]:justify-center'
             >
-              <Link href='/ai-campaign-builder'>
+              <Link href='/ai-campaign-builder/1'>
                 <PenBoxIcon className='size-4' />
                 <span className='group-data-[collapsible=icon]:hidden'>
                   New chat
@@ -249,10 +249,7 @@ export function CampaignChatsPanel() {
             <SidebarMenu className='gap-2'>
               {recentChats.map((chat) => (
                 <SidebarMenuItem key={chat.id}>
-                  <CampaignChat
-                    {...chat}
-                    isActive={chat.id === activeChatId}
-                  />
+                  <CampaignChat {...chat} isActive={chat.id === activeChatId} />
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
