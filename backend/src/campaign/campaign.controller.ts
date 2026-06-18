@@ -83,4 +83,14 @@ export class CampaignController {
   ) {
     return this.campaignService.createMessage(id, createMessageDto, userId);
   }
+
+  @Post(':id/generate')
+  @ApiOperation({ summary: 'Trigger parallel multi-agent specialist asset copy generation' })
+  @ApiCreatedResponse({ description: 'Campaign assets compiled and saved successfully.' })
+  generateCampaign(
+    @Param('id') id: string,
+    @GetUser('id') userId: string
+  ) {
+    return this.campaignService.compileFinalCampaignAssets(id, userId);
+  }
 }
