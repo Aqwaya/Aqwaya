@@ -5,10 +5,7 @@ import { ChatModule } from '../chat/chat.module'; // Import ChatModule here
 import { AiModule } from '../ai/ai.module';
 
 @Module({
-  imports: [
-    ChatModule,
-    AiModule
-  ],
+  imports: [ChatModule, AiModule],
   controllers: [CampaignController],
   providers: [CampaignService],
 })

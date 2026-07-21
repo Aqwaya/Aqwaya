@@ -1,9 +1,34 @@
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
+/**
+ * Structural interfaces for AI Engine responses to enforce strict typing
+ */
+export interface ChatEngineResponse {
+  bot_message?: string;
+  profile?: Record<string, unknown>;
+  suggestive_responses?: string[];
+  ready_to_generate?: boolean;
+}
+
+export interface GenerationEngineResponse {
+  strategy?: unknown;
+  assets?: unknown;
+  [key: string]: unknown;
+}
+
+export interface GenerateAssetsPayload {
+  owner_name: string;
+  business_name: string;
+  industry: string;
+  website_url: string;
+  prompt: string;
+}
+
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private readonly baseUrl = process.env.AI_ENGINE_URL || 'http://localhost:8000';
+  private readonly baseUrl =
+    process.env.AI_ENGINE_URL || 'http://localhost:8000';
 
   /**
    * 🍪 Cookie Session Storage Map
@@ -15,7 +40,10 @@ export class AiService {
   /**
    * Dispatches user message prompts to the Flask AI Engine conversational intake loop
    */
-  async getChatResponse(campaignId: string, prompt: string): Promise<any> {
+  async getChatResponse(
+    campaignId: string,
+    prompt: string,
+  ): Promise<ChatEngineResponse> {
     try {
       const savedCookie = this.sessionCookies.get(campaignId);
       const headers: Record<string, string> = {
@@ -45,9 +73,17 @@ export class AiService {
         this.sessionCookies.set(campaignId, setCookieHeader);
       }
 
-      return await response.json();
-    } catch (error: any) {
-      this.logger.error(`Error in getChatResponse for campaign ${campaignId}:`, error?.stack || error);
+      return (await response.json()) as ChatEngineResponse;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      const err = error as Error;
+      this.logger.error(
+        `Error in getChatResponse for campaign ${campaignId}:`,
+        err.stack || err.message || err,
+      );
       throw new HttpException(
         'Failed to fetch response from AI Orchestrator',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -58,13 +94,9 @@ export class AiService {
   /**
    * Triggers the parallel multi-agent specialist generation run
    */
-  async generateCampaignAssets(payload: {
-    owner_name: string;
-    business_name: string;
-    industry: string;
-    website_url: string;
-    prompt: string;
-  }): Promise<any> {
+  async generateCampaignAssets(
+    payload: GenerateAssetsPayload,
+  ): Promise<GenerationEngineResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/generate`, {
         method: 'POST',
@@ -79,9 +111,17 @@ export class AiService {
         );
       }
 
-      return await response.json();
-    } catch (error: any) {
-      this.logger.error('Error in generateCampaignAssets execution:', error?.stack || error);
+      return (await response.json()) as GenerationEngineResponse;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      const err = error as Error;
+      this.logger.error(
+        'Error in generateCampaignAssets execution:',
+        err.stack || err.message || err,
+      );
       throw new HttpException(
         'Parallel specialist processing failed',
         HttpStatus.INTERNAL_SERVER_ERROR,

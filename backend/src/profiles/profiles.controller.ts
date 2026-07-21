@@ -1,7 +1,21 @@
 // src/profiles/profiles.controller.ts
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth, ApiCreatedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiConsumes,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -17,8 +31,12 @@ export class ProfilesController {
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Setup business identity and brand assets' })
-  @ApiCreatedResponse({ description: 'Business profile successfully updated and onboarded.' })
-  @ApiBadRequestResponse({ description: 'Onboarding failed: Missing required business fields.' })
+  @ApiCreatedResponse({
+    description: 'Business profile successfully updated and onboarded.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Onboarding failed: Missing required business fields.',
+  })
   @UseInterceptors(FileInterceptor('logo'))
   async create(
     @Body() createProfileDto: CreateProfileDto,

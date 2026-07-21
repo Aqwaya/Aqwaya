@@ -13,6 +13,14 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 
+interface AuthenticatedSocketData {
+  user?: {
+    sub?: string;
+    email?: string;
+    [key: string]: unknown;
+  };
+}
+
 @WebSocketGateway({
   cors: { origin: '*' },
 })
@@ -24,12 +32,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly prisma: PrismaService,
   ) {}
 
-  async handleConnection(client: Socket) {
+  handleConnection(client: Socket): void {
     // Keeps your existing JWT manual authentication validation layer intact
+    void client;
   }
 
-  async handleDisconnect(client: Socket) {
+  handleDisconnect(client: Socket): void {
     // Connection disposal cleanup hook
+    void client;
   }
 
   @UsePipes(new ValidationPipe())
@@ -37,8 +47,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: CreateChatDto,
-  ) {
-    const userId = client.data.user?.sub;
+  ): Promise<void> {
+    const socketData = client.data as AuthenticatedSocketData;
+    const userId = socketData.user?.sub;
 
     const campaign = await this.prisma.campaign.findUnique({
       where: { id: payload.campaignId },
@@ -46,7 +57,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // 🔒 Strict BOLA Authorization validation boundary
     if (!campaign || campaign.userId !== userId) {
-      client.emit('error', { message: 'Unauthorized access to this campaign context' });
+      client.emit('error', {
+        message: 'Unauthorized access to this campaign context',
+      });
       return;
     }
 

@@ -93,6 +93,7 @@ model CampaignAsset {
 
 enum CampaignStatus {
   DRAFT
+  IN_PROGRESS
   GENERATING
   COMPLETED
   ARCHIVED

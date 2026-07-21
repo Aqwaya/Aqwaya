@@ -1,11 +1,11 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiBearerAuth, 
-  ApiOkResponse, 
-  ApiUnauthorizedResponse, 
-  ApiForbiddenResponse 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,10 +22,19 @@ export class DashboardController {
 
   @Get('summary')
   @ApiOperation({ summary: 'Fetch business analytics and campaign overview' })
-  @ApiOkResponse({ description: 'Aggregated dashboard statistics returned.', type: DashboardSummaryDto })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized: Session token missing or expired.' })
-  @ApiForbiddenResponse({ description: 'Access denied: Onboarding must be completed first.' })
-  async getSummary(@GetUser('id') userId: string): Promise<DashboardSummaryDto> {
+  @ApiOkResponse({
+    description: 'Aggregated dashboard statistics returned.',
+    type: DashboardSummaryDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized: Session token missing or expired.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Access denied: Onboarding must be completed first.',
+  })
+  async getSummary(
+    @GetUser('id') userId: string,
+  ): Promise<DashboardSummaryDto> {
     return this.dashboardService.getSummary(userId);
   }
 }
