@@ -37,8 +37,8 @@ export class CampaignService {
     return this.prisma.campaign.create({
       data: {
         name: createCampaignDto.name,
-        userId: userId, // 🔒 Explicit context binding prevents payload parameter spoofing
-        status: CampaignStatus.DRAFT, // Initial state: DRAFT
+        userId: userId,
+        status: CampaignStatus.IN_PROGRESS, // 🚀 Initial state: IN_PROGRESS
         details: {},
       },
     });
@@ -46,7 +46,7 @@ export class CampaignService {
 
   async findAll(userId: string): Promise<Campaign[]> {
     return this.prisma.campaign.findMany({
-      where: { userId }, // 🔒 Tenant Isolation: Strict boundary constraint
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -60,7 +60,6 @@ export class CampaignService {
       throw new NotFoundException('Campaign not found');
     }
 
-    // 🔒 Defends against Broken Object Level Authorization (BOLA / IDOR)
     if (campaign.userId !== userId) {
       throw new ForbiddenException(
         'You do not have permission to access this campaign',
@@ -71,14 +70,14 @@ export class CampaignService {
   }
 
   async remove(id: string, userId: string): Promise<Campaign> {
-    await this.findOne(id, userId); // 🔒 Re-use strict tenant evaluation block before running delete changes
+    await this.findOne(id, userId);
     return this.prisma.campaign.delete({
       where: { id },
     });
   }
 
   async findMessages(campaignId: string, userId: string): Promise<unknown> {
-    await this.findOne(campaignId, userId); // 🔒 Blocks viewing chat logs belonging to other users' entities
+    await this.findOne(campaignId, userId);
     return this.chatService.getChatHistory(campaignId);
   }
 
@@ -87,7 +86,7 @@ export class CampaignService {
     createMessageDto: CreateMessageDto,
     userId: string,
   ): Promise<unknown> {
-    await this.findOne(campaignId, userId); // 🔒 Validates session authorization before accepting incoming chat streams
+    await this.findOne(campaignId, userId);
 
     return this.chatService.processMessageCycle({
       campaignId,
@@ -104,20 +103,18 @@ export class CampaignService {
   ): Promise<Campaign> {
     const campaign = await this.findOne(id, userId);
 
-    // 🔄 1. Mark status as GENERATING while parallel agents execute
+    // 1. Mark status as GENERATING while parallel agents execute
     await this.prisma.campaign.update({
       where: { id },
       data: { status: CampaignStatus.GENERATING },
     });
 
-    // Pull the core profile owner info from database
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
 
     const currentProfile = (campaign.details as CampaignProfileDetails) || {};
 
-    // 🛠️ Defends against the required Pydantic 'owner_name' structural validation failure
     const ownerName = user
       ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
       : 'Business Owner';
@@ -134,7 +131,6 @@ export class CampaignService {
         'Generate marketing strategy text',
     };
 
-    // Execute parallel multi-agent strategy compilation via HTTP
     const executionResults =
       await this.aiService.generateCampaignAssets(generationPayload);
 
@@ -144,12 +140,11 @@ export class CampaignService {
       assets: executionResults.assets,
     };
 
-    // 🔄 2. Mark status as COMPLETED when execution finishes successfully
+    // 2. Mark status as READY when execution finishes successfully
     return this.prisma.campaign.update({
       where: { id },
       data: {
-        status: CampaignStatus.COMPLETED,
-        // Merge strategy analysis outputs alongside original conversation details
+        status: CampaignStatus.READY,
         details: updatedDetails as unknown as Prisma.InputJsonValue,
       },
     });

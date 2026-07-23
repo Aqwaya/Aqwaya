@@ -4,7 +4,6 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import {
   MessageRole,
   Prisma,
-  CampaignStatus,
   ChatMessage,
 } from '@prisma/client';
 import { AiService } from '../ai/ai.service';
@@ -42,38 +41,31 @@ export class ChatService {
       },
     });
 
-    // 2. Fetch the live AI Engine step response via cookie-mapped execution context
+    // 2. Fetch the live AI Engine step response via execution context
     const engineResponse = await this.aiService.getChatResponse(
       campaignId,
       content || '',
     );
 
-    // 3. Fetch current campaign status to evaluate state transition
+    // 3. Ensure campaign exists
     const campaign = await this.prisma.campaign.findUnique({
       where: { id: campaignId },
-      select: { status: true },
+      select: { id: true },
     });
 
     if (!campaign) {
       throw new NotFoundException('Campaign not found');
     }
 
-    // 🔄 Transition status from DRAFT -> IN_PROGRESS on active chat interaction
-    const nextStatus =
-      campaign.status === CampaignStatus.DRAFT
-        ? CampaignStatus.IN_PROGRESS
-        : campaign.status;
-
-    // 4. Update campaign profile details and persist lifecycle status change
-    await this.prisma.campaign.update({
-      where: { id: campaignId },
-      data: {
-        status: nextStatus,
-        ...(engineResponse.profile
-          ? { details: engineResponse.profile as Prisma.InputJsonObject }
-          : {}),
-      },
-    });
+    // 4. Update campaign profile details if extracted during conversation step
+    if (engineResponse.profile) {
+      await this.prisma.campaign.update({
+        where: { id: campaignId },
+        data: {
+          details: engineResponse.profile as Prisma.InputJsonObject,
+        },
+      });
+    }
 
     // 5. Map simple suggestion strings into structured button payloads for the UI
     const mappedSuggestions = (engineResponse.suggestive_responses || []).map(
