@@ -1,11 +1,11 @@
+import { api } from '../../lib/axios';
+
 import axios from 'axios';
 import { LoginFormValues, SignupFormValues } from './schemas';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export const loginUser = async ({ email, password }: LoginFormValues) => {
   try {
-    const res = await axios.post(`${API_BASE}/api/v1/auth/login`, {
+    const res = await api.post(`auth/login`, {
       email,
       password,
     });
@@ -28,7 +28,7 @@ export const registerUser = async ({
   password,
 }: SignupFormValues) => {
   try {
-    const res = await axios.post(`${API_BASE}/api/v1/auth/register`, {
+    const res = await api.post(`auth/register`, {
       firstName,
       lastName,
       email,

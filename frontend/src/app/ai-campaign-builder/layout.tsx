@@ -11,20 +11,20 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    // <AuthGuard>
-    <SidebarProvider
-      style={{ '--sidebar-width': '20.5rem' } as React.CSSProperties}
-    >
-      <CampaignChatsPanel />
+    <AuthGuard>
+      <SidebarProvider
+        style={{ '--sidebar-width': '20.5rem' } as React.CSSProperties}
+      >
+        <CampaignChatsPanel />
 
-      <SidebarInset className='h-svh overflow-hidden'>
-        <CampaignChatHeader />
+        <SidebarInset className='h-svh overflow-hidden'>
+          <CampaignChatHeader />
 
-        <main className='bg-background min-h-0 flex-1 w-full overflow-hidden flex flex-col'>
-          <div className='min-h-0 flex-1 overflow-hidden'>{children}</div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-    // </AuthGuard>
+          <main className='bg-background min-h-0 flex-1 w-full overflow-hidden flex flex-col'>
+            <div className='min-h-0 flex-1 overflow-hidden'>{children}</div>
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </AuthGuard>
   );
 }

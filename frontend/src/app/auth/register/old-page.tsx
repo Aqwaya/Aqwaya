@@ -29,8 +29,8 @@ export default function SignUpPage() {
     setError(null);
 
     try {
-      await registerUser({ firstName, lastName, email, password });
-      const loginData = await loginUser({ email, password });
+      await registerUser({firstName, lastName, email, password});
+      const loginData = await loginUser({email, password});
 
       localStorage.setItem('token', loginData.token);
       localStorage.setItem('user', JSON.stringify(loginData.user));

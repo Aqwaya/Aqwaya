@@ -27,6 +27,7 @@ import {
 } from './CampaignChatsFilterDialog';
 import { CampaignSearchChatsDialog } from './CampaignSearchChatsDialog';
 import { cn } from '@/lib/utils';
+import { useCampaigns } from '../hooks/useCampaigns';
 
 const todaysChat: CampaignChatType[] = [
   {
@@ -126,6 +127,10 @@ export function CampaignChatsPanel() {
   const handleOpenFilterDialog = () => setOpenFilterDialog(true);
   const filterIndicatorClassName =
     statusFilter === 'completed' ? 'bg-green-600' : 'bg-blue-600';
+
+  const { data: campaigns } = useCampaigns();
+
+  console.log(campaigns);
 
   return (
     <Sidebar

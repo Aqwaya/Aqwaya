@@ -4,7 +4,6 @@ export const businessProfileSchema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
   industry: z.string().min(1, 'Industry is required'),
   website: z.url('Enter a valid URL'),
-
   location: z.string().min(1, 'Location is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   employees: z.string().min(1, 'Company size is required'),

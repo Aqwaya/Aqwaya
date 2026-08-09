@@ -28,6 +28,7 @@ import {
   type BusinessProfileFormValues,
 } from '../schemas';
 import { employeeSizes, industries } from '../constants';
+import { api } from '@/lib/axios';
 
 export function BusinessProfileForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +52,10 @@ export function BusinessProfileForm() {
 
   const onSubmit = async (values: BusinessProfileFormValues) => {
     console.log(values);
+
+    const res = await api.post('/v1/profiles', values);
+
+    console.log(res);
   };
 
   return (

@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-import Link from 'next/link';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -28,8 +26,8 @@ export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'johndoe@gmail.com',
-      password: 'Johndoe1',
+      email: '',
+      password: '',
     },
   });
 
