@@ -17,7 +17,7 @@ export interface BusinessProfileData {
   description: string;
   employees: string;
   brandColor: string;
-  logo?: string | null;
+  logo?: string | null | undefined;
   logoName?: string;
 }
 

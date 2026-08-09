@@ -2,49 +2,111 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
+
+export const userSanitizedSelect = Prisma.validator<Prisma.UserSelect>()({
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  isActive: true,
+  isOnboarded: true,
+  createdAt: true,
+  updatedAt: true,
+  // Query relation block instead of non-existent properties directly on User
+  profile: {
+    select: {
+      businessName: true,
+      industry: true,
+    },
+  },
+});
+
+export type SanitizedUser = Prisma.UserGetPayload<{
+  select: typeof userSanitizedSelect;
+}>;
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateUserDto): Promise<User> {
-    return this.prisma.user.create({ 
+  /**
+   * Dynamically includes the relation object fields to match your prisma.schema structure
+   */
+  private get userSanitizedSelect() {
+    return userSanitizedSelect;
+  }
+
+  async create(dto: CreateUserDto): Promise<SanitizedUser> {
+    return this.prisma.user.create({
       data: {
         email: dto.email,
         password: dto.password,
         firstName: dto.firstName,
-        lastName: dto.lastName,        
-      }
+        lastName: dto.lastName,
+        isOnboarded: false,
+      },
+      select: this.userSanitizedSelect,
     });
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<SanitizedUser[]> {
     return this.prisma.user.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      select: this.userSanitizedSelect,
     });
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+  async findOne(id: string): Promise<SanitizedUser> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: this.userSanitizedSelect,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
     return user;
   }
 
-  async findOneByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { email } });
-  }
-
-  async update(id: string, dto: UpdateUserDto): Promise<User> {
-    await this.findOne(id);
-    return this.prisma.user.update({
-      where: { id },
-      data: { ...dto },
+  async findOneByEmail(email: string): Promise<SanitizedUser | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+      select: this.userSanitizedSelect,
     });
   }
 
-  async remove(id: string): Promise<User> {
+  /**
+   * 🔒 Secure Internal Backchannel Method
+   * Reserved strictly for AuthService credential verification layers during login checks.
+   */
+  async findInternalWithPassword(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<SanitizedUser> {
     await this.findOne(id);
-    return this.prisma.user.delete({ where: { id } });
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        email: dto.email,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+      },
+      select: this.userSanitizedSelect,
+    });
+  }
+
+  async remove(id: string): Promise<SanitizedUser> {
+    await this.findOne(id);
+
+    return this.prisma.user.delete({
+      where: { id },
+      select: this.userSanitizedSelect,
+    });
   }
 }

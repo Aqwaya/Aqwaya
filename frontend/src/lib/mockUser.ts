@@ -1,11 +1,11 @@
 export type UserPlan = "free" | "starter" | "pro" | "agency";
 
-export interface User {
-  id: string;
-  email: string;
-  credits: number;
-  plan: "starter" | "pro" | "agency";
-}
+// export interface User {
+//   id: string;
+//   email: string;
+//   credits: number;
+//   plan: "starter" | "pro" | "agency";
+// }
 
 export interface MockUser {
   planId: UserPlan;
