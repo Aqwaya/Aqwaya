@@ -1,23 +1,23 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
   ForbiddenException,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiOkResponse, 
-  ApiCreatedResponse, 
-  ApiForbiddenResponse, 
-  ApiBearerAuth 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,6 +28,17 @@ import { OnboardingGuard } from '../auth/guards/onboarding.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '@prisma/client';
+import type { User } from '@prisma/client';
+
+export type SanitizedUser = Omit<User, 'password'>;
+
+// Type definition for request user payload from AuthGuard
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: Role;
+  isOnboarded: boolean;
+}
 
 @ApiTags('Users')
 @ApiBearerAuth('access-token')
@@ -39,30 +50,39 @@ export class UsersController {
   @Post()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Provision a new user account (Superadmin)' })
-  @ApiCreatedResponse({ description: 'Account provisioned by administrative action.' })
-  @ApiForbiddenResponse({ description: 'Permission denied: Administrator role required.' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiCreatedResponse({
+    description: 'Account provisioned by administrative action.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Permission denied: Administrator role required.',
+  })
+  async create(@Body() createUserDto: CreateUserDto): Promise<SanitizedUser> {
+    return (await this.usersService.create(createUserDto)) as SanitizedUser;
   }
 
   @Get()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'List all registered users in the platform' })
   @ApiOkResponse({ description: 'Complete user directory returned.' })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(): Promise<SanitizedUser[]> {
+    return (await this.usersService.findAll()) as SanitizedUser[];
   }
 
   @Get(':id')
-  @UseGuards(OnboardingGuard) // 🔒 Guards standard resource routing paths
+  @UseGuards(OnboardingGuard)
   @ApiOperation({ summary: 'Find a specific user by record ID' })
   @ApiOkResponse({ description: 'User object returned.' })
-  @ApiForbiddenResponse({ description: 'Access denied: Complete onboarding profile first.' })
-  async findOne(@Param('id') id: string, @GetUser() currentUser: any) {
+  @ApiForbiddenResponse({
+    description: 'Access denied: Complete onboarding profile first.',
+  })
+  async findOne(
+    @Param('id') id: string,
+    @GetUser() currentUser: AuthUser,
+  ): Promise<SanitizedUser> {
     if (currentUser.role !== Role.ADMIN && currentUser.id !== id) {
       throw new ForbiddenException('You can only access your own profile');
     }
-    return this.usersService.findOne(id);
+    return (await this.usersService.findOne(id)) as SanitizedUser;
   }
 
   @Patch(':id')
@@ -71,20 +91,20 @@ export class UsersController {
   @ApiOkResponse({ description: 'User record updated successfully.' })
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async update(
-    @Param('id') id: string, 
-    @Body() updateUserDto: UpdateUserDto, 
-    @GetUser() currentUser: any
-  ) {
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @GetUser() currentUser: AuthUser,
+  ): Promise<SanitizedUser> {
     if (currentUser.role !== Role.ADMIN && currentUser.id !== id) {
       throw new ForbiddenException('You can only update your own profile');
     }
-    return this.usersService.update(id, updateUserDto);
+    return (await this.usersService.update(id, updateUserDto)) as SanitizedUser;
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Purge user representation records entirely' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  async remove(@Param('id') id: string): Promise<SanitizedUser> {
+    return (await this.usersService.remove(id)) as SanitizedUser;
   }
 }

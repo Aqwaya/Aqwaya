@@ -7,9 +7,13 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateProfileDto, file?: Express.Multer.File) {
+  async create(
+    userId: string,
+    dto: CreateProfileDto,
+    file?: Express.Multer.File,
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    
+
     // Prevent already onboarded users from recreating profiles
     if (user?.isOnboarded) {
       throw new ConflictException('User is already onboarded');

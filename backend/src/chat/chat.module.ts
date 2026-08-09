@@ -7,9 +7,10 @@ import { JwtModule } from '@nestjs/jwt'; // 🔒 Added for token verification ut
 
 @Module({
   imports: [
-    AiModule, 
+    AiModule,
     PrismaModule,
-    JwtModule.register({ // 🔒 Configure module to read your environment secrets
+    JwtModule.register({
+      // 🔒 Configure module to read your environment secrets
       secret: process.env.JWT_SECRET || 'fallback_secret',
       signOptions: { expiresIn: '1h' },
     }),

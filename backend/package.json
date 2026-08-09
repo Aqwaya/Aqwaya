@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -31,7 +32,7 @@
     "@nestjs/throttler": "^6.5.0",
     "@nestjs/websockets": "^11.1.14",
     "@prisma/adapter-pg": "^7.4.0",
-    "@prisma/client": "^7.4.1",
+    "@prisma/client": "^7.9.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
@@ -69,9 +70,11 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.0",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.4.2",
-    "prisma": "^7.4.1",
+    "prisma": "^7.9.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -97,5 +100,19 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "allowScripts": {
+    "@nestjs/core@11.1.13": true,
+    "@prisma/engines@7.9.0": true,
+    "@scarf/scarf@1.4.0": true,
+    "bcrypt@6.0.0": true,
+    "prisma@7.9.0": true,
+    "unrs-resolver@1.11.1": true
+  },
+  "lint-staged": {
+  "*.ts": [
+    "eslint --fix",
+    "prettier --write"
+  ]
+}
 }

@@ -7,19 +7,22 @@ import { join } from 'path';
 import helmet from 'helmet';
 import compression from 'compression';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Use environment variables for production flexibility
-  const PORT = process.env.PORT || 5000;
+  const rawPort = process.env.PORT;
+  const PORT = rawPort ? parseInt(rawPort, 10) : 5000;
   const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
   const WS_URL = process.env.WS_URL || `ws://localhost:${PORT}`;
 
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: { policy: "unsafe-none" }
-  }));
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginOpenerPolicy: { policy: 'unsafe-none' },
+    }),
+  );
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
@@ -27,8 +30,8 @@ async function bootstrap() {
 
   app.use(compression());
 
-  const origins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(',') 
+  const origins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
     : ['http://localhost:3000'];
 
   app.enableCors({
@@ -45,9 +48,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,               
-      forbidNonWhitelisted: true,    
-      transform: true,               
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
@@ -55,18 +58,18 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Aqwaya API & Real-Time Engine')
-    .addServer(APP_URL, 'Current Environment') // This allows "Try it out" to work in Production
+    .addServer(APP_URL, 'Current Environment') // Enables "Try it out" in Production
     .setDescription(
       '## 🛡️ Authentication\n' +
-      'Protected endpoints require a JWT. Click **Authorize**, enter: `Bearer <token>`\n\n' +
-      '## 💬 Real-Time Chat (WebSockets)\n' +
-      `The chat engine uses **Socket.io**. Connect to: \`${WS_URL}\` (Use JWT in auth header).\n\n` +
-      '### **Outgoing Events**\n' +
-      '- `getHistory`: `{ "campaignId": "string" }` - Requests past messages.\n' +
-      '- `sendMessage`: `{ "campaignId": "string", "content": "string", "action"?: { "type": "string", "value": "any" } }` - Sends a new message or button click.\n\n' +
-      '### **Incoming Events**\n' +
-      '- `chatHistory`: `Array<ChatMessage>` - Returns history for rehydration.\n' +
-      '- `aiResponse`: `{ "text": "string", "suggestions": Array<Suggestion> }` - The AI response.'
+        'Protected endpoints require a JWT. Click **Authorize**, enter: `Bearer <token>`\n\n' +
+        '## 💬 Real-Time Chat (WebSockets)\n' +
+        `The chat engine uses **Socket.io**. Connect to: \`${WS_URL}\` (Use JWT in auth header).\n\n` +
+        '### **Outgoing Events**\n' +
+        '- `getHistory`: `{ "campaignId": "string" }` - Requests past messages.\n' +
+        '- `sendMessage`: `{ "campaignId": "string", "content": "string", "action"?: { "type": "string", "value": "any" } }` - Sends a new message or button click.\n\n' +
+        '### **Incoming Events**\n' +
+        '- `chatHistory`: `Array<ChatMessage>` - Returns history for rehydration.\n' +
+        '- `aiResponse`: `{ "text": "string", "suggestions": Array<Suggestion> }` - The AI response.',
     )
     .setVersion('1.0')
     .addBearerAuth(
@@ -79,7 +82,7 @@ async function bootstrap() {
     .addTag('Dashboard')
     .addTag('Users')
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('docs', app, document, {
@@ -87,11 +90,14 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
       filter: true,
-    }
+    },
   });
 
   await app.listen(PORT);
   logger.log(`🚀 Aqwaya Backend is running on: ${APP_URL}/api/v1`);
 }
 
-bootstrap();
+bootstrap().catch((err: unknown) => {
+  const logger = new Logger('Bootstrap');
+  logger.error('Failed to start application', err);
+});

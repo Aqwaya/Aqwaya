@@ -2,38 +2,50 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
-export type SanitizedUser = Omit<User, 'password'>;
+export const userSanitizedSelect = Prisma.validator<Prisma.UserSelect>()({
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  isActive: true,
+  isOnboarded: true,
+  createdAt: true,
+  updatedAt: true,
+  // Query relation block instead of non-existent properties directly on User
+  profile: {
+    select: {
+      businessName: true,
+      industry: true,
+    },
+  },
+});
+
+export type SanitizedUser = Prisma.UserGetPayload<{
+  select: typeof userSanitizedSelect;
+}>;
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Dynamically includes the relation object fields to match your prisma.schema structure
+   */
   private get userSanitizedSelect() {
-    return {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      role: true,
-      isActive: true,
-      isOnboarded: true,
-      companyName: true,
-      industry: true,
-      createdAt: true,
-      updatedAt: true,
-    };
+    return userSanitizedSelect;
   }
 
   async create(dto: CreateUserDto): Promise<SanitizedUser> {
-    return this.prisma.user.create({ 
+    return this.prisma.user.create({
       data: {
         email: dto.email,
         password: dto.password,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        isOnboarded: false, // 🔒 Default strict fallback state
+        isOnboarded: false,
       },
       select: this.userSanitizedSelect,
     });
@@ -47,11 +59,11 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<SanitizedUser> {
-    const user = await this.prisma.user.findUnique({ 
+    const user = await this.prisma.user.findUnique({
       where: { id },
       select: this.userSanitizedSelect,
     });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -59,7 +71,7 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<SanitizedUser | null> {
-    return this.prisma.user.findUnique({ 
+    return this.prisma.user.findUnique({
       where: { email },
       select: this.userSanitizedSelect,
     });
@@ -91,8 +103,8 @@ export class UsersService {
 
   async remove(id: string): Promise<SanitizedUser> {
     await this.findOne(id);
-    
-    return this.prisma.user.delete({ 
+
+    return this.prisma.user.delete({
       where: { id },
       select: this.userSanitizedSelect,
     });
