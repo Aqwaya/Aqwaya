@@ -1,22 +1,31 @@
-'use client';
+"use client";
 
-import { CampaignChatMessages } from '@/features/campaign/components/CampaignChatMessages';
-import { CampaignChatBox } from '@/features/campaign/components/CampaignChatBox';
-import { useCampaigns } from '@/features/campaign/hooks/useCampaigns';
+import { useState } from "react";
+import { useParams } from "next/navigation";
 
-export default function page() {
-  const { data: campaigns } = useCampaigns();
+import { CampaignChatMessages } from "@/features/campaign/components/CampaignChatMessages";
+import { CampaignChatBox } from "@/features/campaign/components/CampaignChatBox";
 
-  console.log(campaigns);
+export default function Page() {
+  const params = useParams<{ id: string }>();
+  const campaignId = params.id;
+
+  const [message, setMessage] = useState("");
 
   return (
-    <section className='h-full min-h-0 overflow-hidden'>
-      <div className='flex h-full min-h-0 min-w-0 flex-col'>
-        <div className='min-h-0 flex-1 overflow-y-auto'>
-          <CampaignChatMessages />
-        </div>
-        <CampaignChatBox />
+    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <CampaignChatMessages
+          campaignId={campaignId}
+          onSuggestionSelect={setMessage}
+        />
       </div>
+
+      <CampaignChatBox
+        campaignId={campaignId}
+        message={message}
+        setMessage={setMessage}
+      />
     </section>
   );
 }

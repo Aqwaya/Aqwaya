@@ -1,45 +1,116 @@
-'use client';
 
-import { useRef, useState } from 'react';
-import { ArrowUp } from 'lucide-react';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { useRef, useState } from "react";
+import { ArrowUp, LoaderCircle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
-export function CampaignChatBox() {
-  const [message, setMessage] = useState('');
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+import {
+  sendCampaignMessage,
+  generateCampaignResponse,
+} from "@/lib/campaign-chat";
+
+interface CampaignChatBoxProps {
+  campaignId: string;
+  message: string;
+  setMessage: (value: string) => void;
+}
+
+export function CampaignChatBox({
+  campaignId,
+  message,
+  setMessage,
+}: CampaignChatBoxProps) {
+  const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const canSend = message.trim().length > 0;
+  const queryClient = useQueryClient();
+
+  const canSend = message.trim().length > 0 && !isSending;
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    const content = message.trim();
+
+    if (!content || isSending) return;
+
+    try {
+      setIsSending(true);
+
+      await sendCampaignMessage(campaignId, content);
+
+      setMessage("");
+
+      // Show the user's message immediately after saving.
+      await queryClient.invalidateQueries({
+        queryKey: ["campaign-messages", campaignId],
+      });
+
+      await generateCampaignResponse(campaignId);
+
+      // Retrieve the AI response and its suggestions.
+      await queryClient.invalidateQueries({
+        queryKey: ["campaign-messages", campaignId],
+      });
+    } catch (error) {
+      console.error("Campaign chat error:", error);
+    } finally {
+      setIsSending(false);
+      textareaRef.current?.focus();
+    }
+  }
 
   return (
-    <div className='w-full shrink-0 bg-background px-3 pb-3 pt-2 sm:px-4 sm:pb-5'>
+    <div className="w-full shrink-0 border-t border-border bg-background px-3 pb-4 pt-3 sm:px-6">
+      {isSending && (
+        <div className="mx-auto mb-2 flex max-w-5xl items-center gap-2 text-xs text-muted-foreground">
+          <LoaderCircle className="size-3.5 animate-spin" />
+          Your AI strategist is working...
+        </div>
+      )}
+
       <form
-        className='mx-auto flex max-w-3xl cursor-text flex-col rounded-2xl border border-border p-2 shadow-xs transition-[border-color,box-shadow] focus-within:border-muted-foreground/40 focus-within:shadow-sm gap-2'
-        onClick={() => textareaRef.current?.focus()}
-        onSubmit={(event) => {
-          event.preventDefault();
-        }}
+        onSubmit={handleSubmit}
+        className="mx-auto flex max-w-5xl items-end gap-2 rounded-2xl border border-border bg-background p-2 shadow-sm focus-within:shadow-md"
       >
         <Textarea
           ref={textareaRef}
-          placeholder='Ask anything or give instructions'
+          placeholder="Type your answer..."
           rows={1}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
-          className='max-h-40 min-h-14 resize-none overflow-y-auto border-0 bg-transparent px-2 py-2 text-sm leading-6 shadow-none [scrollbar-width:thin] focus-visible:ring-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent'
+          disabled={isSending}
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
+          className="max-h-36 min-h-12 resize-none border-0 bg-transparent px-3 py-3 text-sm leading-6 shadow-none focus-visible:ring-0"
         />
 
-        <div className='flex justify-end'>
-          <Button
-            type='submit'
-            size='icon'
-            disabled={!canSend}
-            className='size-9 shrink-0 cursor-pointer rounded-md bg-blue-600 text-white shadow-none hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground'
-            aria-label='Send message'
-          >
-            <ArrowUp className='size-4' />
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={!canSend}
+          className="size-10 shrink-0 rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:bg-muted disabled:text-muted-foreground"
+          aria-label="Send message"
+        >
+          {isSending ? (
+            <LoaderCircle className="size-4 animate-spin" />
+          ) : (
+            <ArrowUp className="size-4" />
+          )}
+        </Button>
       </form>
     </div>
   );

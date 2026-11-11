@@ -1,7 +1,7 @@
 export interface CampaignChat {
   id: string;
   title: string;
-  status: 'in-progress' | 'completed';
+  status: "completed" | "in-progress";
   time: string;
   pinned: boolean;
 }

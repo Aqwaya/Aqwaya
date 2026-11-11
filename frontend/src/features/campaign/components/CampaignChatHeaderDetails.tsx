@@ -1,20 +1,38 @@
-import { SidebarTrigger } from '@/components/ui/sidebar';
+"use client";
+
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useParams } from "next/navigation";
+import { useCampaign } from "../hooks/useCampaign";
 
 export function CampaignChatHeaderDetails() {
-  return (
-    <div className='flex min-w-0 items-center gap-2'>
-      <SidebarTrigger className='shrink-0 text-foreground hover:bg-muted hover:text-foreground md:hidden' />
+  const params = useParams<{ id: string }>();
+  const campaignId = params.id;
 
-      <div className='min-w-0'>
-        <h1 className='truncate text-sm font-semibold text-foreground w-2/3 md:max-w-1/4'>
-          Black Friday PromoCampaign BuilderCampaign BuilderCampaign
-          BuilderCampaign BuilderCampaign BuilderCampaign BuilderCampaign
-          BuilderCampaign BuilderCampaign BuilderCampaign BuilderCampaign
-          BuilderCampaign Builder
+  const {
+    data: campaign,
+    isLoading,
+    isError,
+  } = useCampaign(campaignId);
+
+  return (
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <SidebarTrigger className="shrink-0 text-foreground hover:bg-muted hover:text-foreground md:hidden" />
+
+      <div className="min-w-0 flex-1">
+        <h1
+          title={campaign?.name}
+          className="truncate text-sm font-semibold text-foreground md:text-base"
+        >
+          {isLoading
+            ? "Loading campaign..."
+            : isError
+              ? "Unable to load campaign"
+              : campaign?.name || "New Campaign"}
         </h1>
-        <span className='mt-1 inline-flex h-5 items-center rounded-full bg-blue-50 px-2 text-[11px] font-medium text-blue-700'>
-          In progress
-        </span>
+
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          Campaign conversation
+        </p>
       </div>
     </div>
   );
