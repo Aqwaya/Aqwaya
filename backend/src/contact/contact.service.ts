@@ -35,7 +35,7 @@ export class ContactService {
         fetch('https://api.brevo.com/v3/contacts', {
           method: 'POST',
           headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'content-type': 'application/json',
             'api-key': process.env.BREVO_API_KEY || '',
           },
@@ -62,7 +62,8 @@ export class ContactService {
 
       // Optional: Check for failures in non-critical tasks (Brevo/Email)
       results.forEach((res, i) => {
-        if (res.status === 'rejected') console.error(`Task ${i} failed:`, res.reason);
+        if (res.status === 'rejected')
+          console.error(`Task ${i} failed:`, res.reason);
       });
 
       return { success: true, message: 'Your message has been sent.' };

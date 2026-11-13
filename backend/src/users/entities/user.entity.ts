@@ -1,9 +1,15 @@
+import { Role } from '@prisma/client';
+
 export class User {
-  id: string;
-  email: string;
-  username: string;
+  id!: string;
+  email!: string;
+  firstName!: string;
+  lastName!: string;
   password?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  role!: Role;
+  isOnboarded!: boolean;
+  companyName?: string | null;
+  industry?: string | null;
+  createdAt!: Date;
+  updatedAt!: Date;
 }

@@ -13,10 +13,9 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0", // Keeps the watch script working perfectly
     "paths": {
-      "@prisma/client": ["src/generated/prisma"]
+      "@prisma/client": ["./src/generated/prisma"] // Added "./" prefix here
     },
     "incremental": true,
     "skipLibCheck": true,

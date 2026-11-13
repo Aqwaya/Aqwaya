@@ -4,6 +4,6 @@ import { WaitlistController } from './waitlist.controller';
 
 @Module({
   providers: [WaitlistService],
-  controllers: [WaitlistController]
+  controllers: [WaitlistController],
 })
 export class WaitlistModule {}
