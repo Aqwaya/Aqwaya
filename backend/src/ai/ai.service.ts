@@ -1,40 +1,138 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+
+/**
+ * Structural interfaces for AI Engine responses to enforce strict typing
+ */
+export interface ChatEngineResponse {
+  bot_message?: string;
+  profile?: Record<string, unknown>;
+  suggestive_responses?: string[];
+  ready_to_generate?: boolean;
+}
+
+export interface GenerationEngineResponse {
+  strategy?: unknown;
+  assets?: unknown;
+  [key: string]: unknown;
+}
+
+export interface GenerateAssetsPayload {
+  owner_name: string;
+  business_name: string;
+  industry: string;
+  website_url: string;
+  prompt: string;
+}
 
 @Injectable()
 export class AiService {
-  async getMockResponse(prompt: string, details: any) {
-    await new Promise(res => setTimeout(res, 1200));
+  private readonly logger = new Logger(AiService.name);
+  private readonly baseUrl =
+    process.env.AI_ENGINE_URL || 'http://localhost:8000';
 
-    // 1. Check for the key 'UPDATE_INDUSTRY' (matching your button action type)
-    if (!details || !details.UPDATE_INDUSTRY) {
-      return {
-        text: "I see you're starting a new campaign! To give you the best advice, could you tell me which industry your business belongs to?",
-        suggestions: [
-          { label: 'E-commerce', action: 'UPDATE_INDUSTRY', value: 'ecommerce' },
-          { label: 'SaaS / Tech', action: 'UPDATE_INDUSTRY', value: 'saas' },
-          { label: 'Real Estate', action: 'UPDATE_INDUSTRY', value: 'real-estate' }
-        ]
+  /**
+   * 🍪 Cookie Session Storage Map
+   * Maps campaignId -> Flask Session Cookie String
+   * Ensures multi-step conversation isolation and context continuity across stateful WS flows
+   */
+  private sessionCookies = new Map<string, string>();
+
+  /**
+   * Dispatches user message prompts to the Flask AI Engine conversational intake loop
+   */
+  async getChatResponse(
+    campaignId: string,
+    prompt: string,
+  ): Promise<ChatEngineResponse> {
+    try {
+      const savedCookie = this.sessionCookies.get(campaignId);
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
       };
-    }
 
-    // 2. If Industry exists, but Channel is missing, move to the next question
-    if (!details.SET_CHANNEL) {
-      const industryName = details.UPDATE_INDUSTRY;
-      return {
-        text: `Since you are in ${industryName}, I recommend a lead-generation campaign. Should we focus on Email or Social Media?`,
-        suggestions: [
-          { label: 'Focus on Email', action: 'SET_CHANNEL', value: 'email' },
-          { label: 'Social Media Ads', action: 'SET_CHANNEL', value: 'social' }
-        ]
-      };
-    }
+      if (savedCookie) {
+        headers['Cookie'] = savedCookie;
+      }
 
-    // 3. Final state reached
-    return {
-      text: `Great choice! I'm now setting up your ${details.SET_CHANNEL} strategy for the ${details.UPDATE_INDUSTRY} sector. Ready to see the draft?`,
-      suggestions: [
-        { label: 'Yes, show me', action: 'COMPLETE', value: true }
-      ]
-    };
+      const response = await fetch(`${this.baseUrl}/chat`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ message: prompt }),
+      });
+
+      if (!response.ok) {
+        throw new HttpException(
+          `AI Engine communication failure: ${response.statusText}`,
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
+
+      // Intercept and preserve session cookie updates dispatched by Flask
+      const setCookieHeader = response.headers.get('set-cookie');
+      if (setCookieHeader) {
+        this.sessionCookies.set(campaignId, setCookieHeader);
+      }
+
+      return (await response.json()) as ChatEngineResponse;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      const err = error as Error;
+      this.logger.error(
+        `Error in getChatResponse for campaign ${campaignId}:`,
+        err.stack || err.message || err,
+      );
+      throw new HttpException(
+        'Failed to fetch response from AI Orchestrator',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Triggers the parallel multi-agent specialist generation run
+   */
+  async generateCampaignAssets(
+    payload: GenerateAssetsPayload,
+  ): Promise<GenerationEngineResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new HttpException(
+          `AI Engine asset generation failure: ${response.statusText}`,
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
+
+      return (await response.json()) as GenerationEngineResponse;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      const err = error as Error;
+      this.logger.error(
+        'Error in generateCampaignAssets execution:',
+        err.stack || err.message || err,
+      );
+      throw new HttpException(
+        'Parallel specialist processing failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Clears tracking context once a conversation context lifecycle terminates
+   */
+  clearSession(campaignId: string): void {
+    this.sessionCookies.delete(campaignId);
   }
 }

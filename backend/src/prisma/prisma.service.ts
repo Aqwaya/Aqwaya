@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -7,7 +12,12 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
     const connectionString = process.env.DATABASE_URL;
 
@@ -25,16 +35,20 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     super({ adapter });
   }
 
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     try {
       await this.$connect();
-      console.log('✅ Database connected successfully via Prisma 7 Adapter');
-    } catch (error: any) {
-      console.error('❌ Database connection error:', error.message);
+      this.logger.log(
+        '✅ Database connected successfully via Prisma 7 Adapter',
+      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Unknown connection error';
+      this.logger.error(`❌ Database connection error: ${message}`);
     }
   }
 
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }
 }

@@ -12,11 +12,18 @@ export class JoinWaitlistDto {
   @IsString()
   lastName: string;
 
-  @ApiProperty({ example: 'tester@aqwaya.com', description: 'Unique email address' })
+  @ApiProperty({
+    example: 'tester@aqwaya.com',
+    description: 'Unique email address',
+  })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: '+2348000000000', required: false, description: 'Optional phone number' })
+  @ApiProperty({
+    example: '+2348000000000',
+    required: false,
+    description: 'Optional phone number',
+  })
   @IsOptional()
   @IsString()
   phone?: string;

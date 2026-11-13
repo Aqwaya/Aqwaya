@@ -1,14 +1,19 @@
-import { 
-  Injectable, 
-  CanActivate, 
-  ExecutionContext, 
-  ForbiddenException 
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
+
+interface RequestWithUser {
+  user?: User;
+}
 
 @Injectable()
 export class OnboardingGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
 
     if (!user) {

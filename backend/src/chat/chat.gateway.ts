@@ -10,39 +10,36 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { AiService } from '../ai/ai.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { MessageRole } from '@prisma/client';
+
+interface AuthenticatedSocketData {
+  user?: {
+    sub?: string;
+    email?: string;
+    [key: string]: unknown;
+  };
+}
 
 @WebSocketGateway({
   cors: { origin: '*' },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer()
-  server: Server;
+  @WebSocketServer() server!: Server;
 
   constructor(
     private readonly chatService: ChatService,
-    private readonly aiService: AiService,
     private readonly prisma: PrismaService,
   ) {}
 
-  handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+  handleConnection(client: Socket): void {
+    // Keeps your existing JWT manual authentication validation layer intact
+    void client;
   }
 
-  handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
-  }
-
-  @SubscribeMessage('getHistory')
-  async handleGetHistory(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { campaignId: string },
-  ) {
-    const history = await this.chatService.getChatHistory(data.campaignId);
-    client.emit('chatHistory', history);
+  handleDisconnect(client: Socket): void {
+    // Connection disposal cleanup hook
+    void client;
   }
 
   @UsePipes(new ValidationPipe())
@@ -50,47 +47,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: CreateChatDto,
-  ) {
-    // 1. Save User Message & Update Campaign state if action exists
-    const userMsg = await this.chatService.saveMessage(payload);
+  ): Promise<void> {
+    const socketData = client.data as AuthenticatedSocketData;
+    const userId = socketData.user?.sub;
 
-    client.emit('messageReceived', { 
-      messageId: userMsg.id, 
-      status: 'saved' 
-    });
-
-    // 2. Get latest campaign details for AI context
     const campaign = await this.prisma.campaign.findUnique({
       where: { id: payload.campaignId },
     });
 
-    if (!campaign) {
-      client.emit('error', { message: 'Campaign not found' });
+    // 🔒 Strict BOLA Authorization validation boundary
+    if (!campaign || campaign.userId !== userId) {
+      client.emit('error', {
+        message: 'Unauthorized access to this campaign context',
+      });
       return;
     }
 
-    // 3. Get Mock AI Response based on updated state
-    const aiResult = await this.aiService.getMockResponse(
-      payload.content || '', 
-      campaign.details
-    );
+    // Process the entire conversation cycle safely
+    const cycleResult = await this.chatService.processMessageCycle(payload);
 
-    // 4. Save AI Response to Database
-    const aiMsg = await this.prisma.chatMessage.create({
-      data: {
-        campaignId: payload.campaignId,
-        content: aiResult.text,
-        role: MessageRole.ASSISTANT,
-        suggestions: aiResult.suggestions as any,
-      },
+    // Notify client the user's message was processed
+    client.emit('messageReceived', {
+      messageId: cycleResult.userMessage.id,
+      status: 'saved',
     });
 
-    // 5. Emit AI response to client
-    client.emit('aiResponse', {
-      messageId: aiMsg.id,
-      text: aiMsg.content,
-      suggestions: aiMsg.suggestions,
-      timestamp: aiMsg.createdAt,
-    });
+    // Emit the freshly captured system response to the active client interface
+    client.emit('message', cycleResult.assistantMessage);
+
+    // Broadcast state updates if generation switches are ready
+    if (cycleResult.readyToGenerate) {
+      client.emit('campaignStateChange', { status: 'READY' });
+    }
   }
 }

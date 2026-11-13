@@ -62,7 +62,7 @@ model Profile {
 model Campaign {
   id        String          @id @default(uuid())
   name      String?
-  status    CampaignStatus  @default(DRAFT)
+  status    CampaignStatus  @default(IN_PROGRESS)
   details   Json            @default("{}")
   userId    String
   user      User            @relation(fields: [userId], references: [id])
@@ -92,9 +92,10 @@ model CampaignAsset {
 }
 
 enum CampaignStatus {
-  DRAFT
+  IN_PROGRESS
   GENERATING
-  COMPLETED
+  READY
+  LAUNCHED
   ARCHIVED
 }
 
